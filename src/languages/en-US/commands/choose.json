@@ -1,0 +1,10 @@
+{
+	"success": {
+		"title": "Choose from choices",
+		"description": "My choice is `{{choice}}`"
+	},
+	"error": {
+		"title": "Choose from choices",
+		"description": "Unable to choose."
+	}
+}

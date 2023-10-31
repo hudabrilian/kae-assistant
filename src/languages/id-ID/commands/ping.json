@@ -1,0 +1,10 @@
+{
+	"success": {
+		"title": "Ping",
+		"description": "Pong! Latensi Bot {{bot}}ms. Latensi API {{api}}ms."
+	},
+	"error": {
+		"title": "Ping",
+		"description": "Tidak dapat memperoleh latensi."
+	}
+}

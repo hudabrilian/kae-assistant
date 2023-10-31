@@ -1,0 +1,10 @@
+{
+	"success": {
+		"title": "Ping",
+		"description": "Pong! Bot Latency {{bot}}ms. API Latency {{api}}ms."
+	},
+	"error": {
+		"title": "Ping",
+		"description": "Unable to get latency."
+	}
+}

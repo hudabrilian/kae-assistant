@@ -1,0 +1,10 @@
+{
+	"success": {
+		"title": "Memilih dari pilihan",
+		"description": "Pilihanku adalah `{{choice}}`"
+	},
+	"error": {
+		"title": "Memilih dari pilihan",
+		"description": "Tidak dapat memilih."
+	}
+}
