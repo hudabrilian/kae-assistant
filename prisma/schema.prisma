@@ -29,6 +29,7 @@ model Guild {
   fields Field[]
 
   greetings Greeting[]
+  guildVerify GuildVerify?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -97,6 +98,21 @@ model Greeting {
   welcomeEmbedId String? @db.ObjectId
   leaveEmbed Embed? @relation("leaveGreetings", fields: [leaveEmbedId], references: [id])
   leaveEmbedId String? @db.ObjectId
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model GuildVerify {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+
+  guild Guild @relation(fields: [guildId], references: [id])
+  guildId String @db.ObjectId @unique
+
+  role String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 enum LanguageTag {
