@@ -6,7 +6,9 @@ export class ParentCommand extends Subcommand {
 		super(context, {
 			...options,
 			name: 'test',
-			preconditions: ['BotOwner']
+			preconditions: ['BotOwner'],
+			requiredUserPermissions: ['Administrator'],
+			requiredClientPermissions: ['Administrator']
 		});
 	}
 
