@@ -43,6 +43,8 @@ export class KissCommand extends KaeCommand {
 	}
 
 	public async sendImage(interaction: KaeCommand.ChatInputCommandInteraction | KaeCommand.ContextMenuCommandInteraction) {
+		await interaction.deferReply();
+
 		const userToKiss = interaction.options.getUser('user', true);
 
 		const userToKissMention = userMention(userToKiss.id);
@@ -57,7 +59,7 @@ export class KissCommand extends KaeCommand {
 					: `**${interactionUserMention} gave ${userToKissMention} a kiss!**`
 			);
 
-		return interaction.reply({
+		return interaction.editReply({
 			embeds: [embed],
 			allowedMentions: {
 				users: [userToKiss.id, interaction.user.id]

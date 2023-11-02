@@ -42,6 +42,8 @@ export class SlapCommand extends KaeCommand {
 	}
 
 	public async sendImage(interaction: KaeCommand.ChatInputCommandInteraction | KaeCommand.ContextMenuCommandInteraction) {
+		await interaction.deferReply();
+
 		const userToSlap = interaction.options.getUser('user', true);
 
 		const userToSlapMention = userMention(userToSlap.id);
@@ -56,7 +58,7 @@ export class SlapCommand extends KaeCommand {
 					: `**${interactionUserMention} gave ${userToSlapMention} a slap!**`
 			);
 
-		return interaction.reply({
+		return interaction.editReply({
 			embeds: [embed],
 			allowedMentions: {
 				users: [userToSlap.id, interaction.user.id]

@@ -42,6 +42,8 @@ export class HugCommand extends KaeCommand {
 	}
 
 	public async sendImage(interaction: KaeCommand.ChatInputCommandInteraction | KaeCommand.ContextMenuCommandInteraction) {
+		await interaction.deferReply();
+
 		const userToHug = interaction.options.getUser('user', true);
 
 		const userToHugMention = userMention(userToHug.id);
@@ -56,7 +58,7 @@ export class HugCommand extends KaeCommand {
 					: `**${interactionUserMention} gave ${userToHugMention} a hug!**`
 			);
 
-		return interaction.reply({
+		return interaction.editReply({
 			embeds: [embed],
 			allowedMentions: {
 				users: [userToHug.id, interaction.user.id]
