@@ -25,8 +25,78 @@ model Guild {
 
   language LanguageTag? @default(en_US)
 
+  embeds Embed[]
+  fields Field[]
+
+  greetings Greeting[]
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+model Embed {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+  name String
+
+  guild Guild @relation(fields: [guildId], references: [id])
+  guildId String @db.ObjectId
+
+  title String?
+  url String?
+  author String?
+  authorIconURL String?
+  authorURL String?
+  description String?
+  color String?
+  footer String?
+  footerIconURL String?
+  thumbnail String?
+  image String?
+  timestamp Boolean?
+
+  fields Field[] @relation(fields: [fieldIds], references: [id])
+  fieldIds String[] @db.ObjectId
+
+  welcomeGreetings Greeting[] @relation("welcomeGreetings")
+  leaveGreetings Greeting[] @relation("leaveGreetings")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Field {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+
+  guild Guild @relation(fields: [guildId], references: [id])
+  guildId String @db.ObjectId
+
+  nameField String
+  name String
+  value String
+  inline Boolean?
+
+  embeds Embed[] @relation(fields: [embedIds], references: [id])
+  embedIds String[] @db.ObjectId
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Greeting {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+
+  enabled Boolean @default(false)
+
+  guild Guild @relation(fields: [guildId], references: [id])
+  guildId String @db.ObjectId
+
+  welcomeChannel String?
+  leaveChannel String?
+
+  welcomeEmbed Embed? @relation("welcomeGreetings", fields: [welcomeEmbedId], references: [id])
+  welcomeEmbedId String? @db.ObjectId
+  leaveEmbed Embed? @relation("leaveGreetings", fields: [leaveEmbedId], references: [id])
+  leaveEmbedId String? @db.ObjectId
 }
 
 enum LanguageTag {
