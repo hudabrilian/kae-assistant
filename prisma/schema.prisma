@@ -64,6 +64,21 @@ model GuildLevel {
 
   status Boolean @default(false)
 
+  levelRole GuildLevelRole[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model GuildLevelRole {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+
+  guild GuildLevel @relation(fields: [guildId], references: [id])
+  guildId String @db.ObjectId
+
+  role String
+  level Int
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }

@@ -1,17 +1,19 @@
-import { ApplyOptions } from '@sapphire/decorators';
 import { KaeCommand } from '../../lib/structures/commands/KaeCommand';
 import KaeEmbed from '../../lib/structures/embeds/KaeEmbed';
 
-@ApplyOptions<KaeCommand.Options>({
-	description: 'Level system'
-})
 export class LevelCommand extends KaeCommand {
-	public override registerApplicationCommands(registry: KaeCommand.Registry) {
-		registry.registerChatInputCommand((builder) => {
-			builder
-				.setName(this.name)
-				.setDescription(this.description)
-				.addBooleanOption((input) => input.setName('status').setDescription('Status level system in this guild'));
+	public constructor(context: KaeCommand.Context, options: KaeCommand.Options) {
+		super(context, {
+			...options,
+			preconditions: [],
+			registerSubCommand: {
+				parentCommandName: 'level',
+				slashSubcommand: (builder) =>
+					builder
+						.setName('setting')
+						.setDescription('Guild level settings')
+						.addBooleanOption((input) => input.setName('status').setDescription('Status level system in this guild'))
+			}
 		});
 	}
 
