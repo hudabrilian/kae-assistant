@@ -1,4 +1,4 @@
-import { GuildLevel, UserLevel } from '@prisma/client';
+import { GuildLevel, Prisma, UserLevel } from '@prisma/client';
 import { type Container } from '@sapphire/pieces';
 import { LevelEvents } from '../types/enum';
 import { container as c } from '@sapphire/framework';
@@ -255,5 +255,36 @@ export class KaeLevel {
 			user: userLevel,
 			level
 		});
+	}
+
+	public async getLeaderboard(
+		guildId: string,
+		limit: number = 10
+	): Promise<
+		Prisma.UserLevelGetPayload<{
+			include: {
+				user: true;
+			};
+		}>[]
+	> {
+		try {
+			return await this.container.prisma.userLevel.findMany({
+				where: {
+					guild: {
+						guildId
+					}
+				},
+				include: {
+					user: true
+				},
+				orderBy: {
+					xp: 'desc'
+				},
+				take: limit
+			});
+		} catch (error) {
+			this.container.logger.error(error);
+			return [];
+		}
 	}
 }
