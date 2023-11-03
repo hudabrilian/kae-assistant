@@ -50,8 +50,11 @@ export class HugCommand extends KaeCommand {
 		const interactionUserMention = userMention(interaction.user.id);
 
 		const hugImage = await getImage('hug');
+
+		if (hugImage.status === 'error') return interaction.editReply(hugImage.message);
+
 		const embed = new KaeEmbed()
-			.setImage(hugImage)
+			.setImage(hugImage.data!.url)
 			.setDescription(
 				userToHugMention === interactionUserMention
 					? `**${interactionUserMention} gave themselves a hug!**`

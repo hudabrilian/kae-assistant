@@ -51,8 +51,11 @@ export class KissCommand extends KaeCommand {
 		const interactionUserMention = userMention(interaction.user.id);
 
 		const kissImage = await getImage('kiss');
+
+		if (kissImage.status === 'error') return interaction.editReply(kissImage.message);
+
 		const embed = new KaeEmbed()
-			.setImage(kissImage)
+			.setImage(kissImage.data!.url)
 			.setDescription(
 				userToKissMention === interactionUserMention
 					? `**${interactionUserMention} gave themselves a kiss!**`

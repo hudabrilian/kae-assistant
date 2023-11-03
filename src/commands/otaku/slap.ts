@@ -50,8 +50,11 @@ export class SlapCommand extends KaeCommand {
 		const interactionUserMention = userMention(interaction.user.id);
 
 		const slapImage = await getImage('slap');
+
+		if (slapImage.status === 'error') return interaction.editReply(slapImage.message);
+
 		const embed = new KaeEmbed()
-			.setImage(slapImage)
+			.setImage(slapImage.data!.url)
 			.setDescription(
 				userToSlapMention === interactionUserMention
 					? `**${interactionUserMention} gave themselves a slap!**`
