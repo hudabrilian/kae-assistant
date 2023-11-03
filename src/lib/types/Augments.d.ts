@@ -1,9 +1,11 @@
 import { PrismaClient } from '@prisma/client';
 import { ArrayString } from '@skyra/env-utilities';
+import { KaeLevel } from '../structures/KaeLevel';
 
 declare module '@sapphire/pieces' {
 	interface Container {
 		prisma: PrismaClient;
+		level: KaeLevel;
 	}
 }
 

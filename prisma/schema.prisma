@@ -13,7 +13,25 @@ datasource db {
 model User {
   id    String  @id @default(auto()) @map("_id") @db.ObjectId
   userId String @unique
+
+  level UserLevel[]
   
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model UserLevel {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+
+  user User @relation(fields: [userId], references: [id])
+  userId String @db.ObjectId
+
+  guild Guild @relation(fields: [guildId], references: [id])
+  guildId String @db.ObjectId
+
+  xp Int @default(0)
+  level Int @default(1)
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
@@ -30,6 +48,21 @@ model Guild {
 
   greetings Greeting[]
   guildVerify GuildVerify?
+
+  guildLevel GuildLevel?
+  usersLevel UserLevel[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model GuildLevel {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+
+  guild Guild @relation(fields: [guildId], references: [id])
+  guildId String @db.ObjectId @unique
+
+  status Boolean @default(false)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

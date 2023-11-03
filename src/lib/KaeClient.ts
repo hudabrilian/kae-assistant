@@ -2,6 +2,7 @@ import { Enumerable } from '@sapphire/decorators';
 import { SapphireClient, container } from '@sapphire/framework';
 import { CLIENT_OPTIONS } from '../config';
 import prismaClient from './database';
+import { KaeLevel } from './structures/KaeLevel';
 
 export default class KaeClient extends SapphireClient {
 	@Enumerable(false)
@@ -11,6 +12,7 @@ export default class KaeClient extends SapphireClient {
 		super(CLIENT_OPTIONS);
 
 		container.prisma = prismaClient;
+		container.level = new KaeLevel();
 	}
 
 	public override async login(token?: string) {
