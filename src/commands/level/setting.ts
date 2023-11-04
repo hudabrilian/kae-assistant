@@ -1,5 +1,6 @@
 import { KaeCommand } from '../../lib/structures/commands/KaeCommand';
 import KaeEmbed from '../../lib/structures/embeds/KaeEmbed';
+import { StatusCode } from '../../lib/types/enum';
 
 export class LevelCommand extends KaeCommand {
 	public constructor(context: KaeCommand.Context, options: KaeCommand.Options) {
@@ -26,9 +27,9 @@ export class LevelCommand extends KaeCommand {
 
 		if (status !== null) await this.container.level.setLevelGuild(interaction.guildId!, status);
 
-		if (!guildLevel)
+		if (guildLevel.status !== StatusCode.SUCCESS)
 			return interaction.editReply({
-				embeds: [new KaeEmbed().setTitle('Something went wrong').setDescription('The guild was not found')]
+				embeds: [new KaeEmbed().setTitle('Something went wrong').setDescription(guildLevel.message)]
 			});
 
 		return interaction.editReply({

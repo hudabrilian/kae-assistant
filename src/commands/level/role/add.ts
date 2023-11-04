@@ -1,6 +1,7 @@
 import { roleMention } from 'discord.js';
 import { KaeCommand } from '../../../lib/structures/commands/KaeCommand';
 import { addLevelRole } from '../../../lib/utils/levelRole';
+import { StatusCode } from '../../../lib/types/enum';
 
 export class AddRoleLevelCommand extends KaeCommand {
 	public constructor(context: KaeCommand.Context, options: KaeCommand.Options) {
@@ -30,7 +31,7 @@ export class AddRoleLevelCommand extends KaeCommand {
 
 		const addRole = await addLevelRole(role.id, level, interaction.guildId!);
 
-		if (!addRole) return interaction.editReply('Failed to add role level');
+		if (addRole.status !== StatusCode.SUCCESS) return interaction.editReply(addRole.message);
 
 		return interaction.editReply(`Added ${roleMention(role.id)} role for level ${level}`);
 	}

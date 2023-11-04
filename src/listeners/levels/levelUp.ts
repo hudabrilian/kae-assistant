@@ -2,7 +2,7 @@ import { UserLevel } from '@prisma/client';
 import { ApplyOptions } from '@sapphire/decorators';
 import { Listener } from '@sapphire/framework';
 import { GuildMember, Message, roleMention } from 'discord.js';
-import { LevelEvents } from '../../lib/types/enum';
+import { LevelEvents, StatusCode } from '../../lib/types/enum';
 import { getLevelRoleByLevel } from '../../lib/utils/levelRole';
 
 @ApplyOptions<Listener.Options>({
@@ -15,18 +15,20 @@ export class LevelsListener extends Listener<typeof LevelEvents.LEVEL_UP> {
 		const member = message.member as GuildMember;
 		const levelRoleGuild = await getLevelRoleByLevel(message.guildId!, level);
 
-		if (!levelRoleGuild) {
+		if (levelRoleGuild.status === StatusCode.NOT_FOUND) {
 			await message.channel.send({
 				content: `Congratulations ${message.member}, you reached level ${level}!`
 			});
 			return;
 		}
 
-		const guildRole = message.guild!.roles.cache.find((role) => role.id === levelRoleGuild.role);
+		if (levelRoleGuild.status !== StatusCode.SUCCESS) return;
+
+		const guildRole = message.guild!.roles.cache.find((role) => role.id === levelRoleGuild.data!.role);
 
 		if (!guildRole) return;
 
-		if (member.roles.cache.some((role) => role.id === levelRoleGuild.role)) {
+		if (member.roles.cache.some((role) => role.id === levelRoleGuild.data!.role)) {
 			await message.channel.send({
 				content: `Congratulations ${message.member}, you reached level ${level}!`
 			});

@@ -1,6 +1,7 @@
 import { ApplyOptions } from '@sapphire/decorators';
 import { KaeCommand } from '../../lib/structures/commands/KaeCommand';
 import KaeEmbed from '../../lib/structures/embeds/KaeEmbed';
+import { StatusCode } from '../../lib/types/enum';
 
 @ApplyOptions<KaeCommand.Options>({
 	description: 'Leaderboard level in this guild'
@@ -17,9 +18,14 @@ export class LevelCommand extends KaeCommand {
 
 		const userLevels = await this.container.level.getLeaderboard(interaction.guildId!);
 
+		if (userLevels.status !== StatusCode.SUCCESS)
+			return interaction.editReply({
+				embeds: [new KaeEmbed().setTitle('Something went wrong').setDescription(userLevels.message)]
+			});
+
 		const embed = new KaeEmbed().setTitle(`${interaction.guild!.name} leaderboard`);
 
-		if (userLevels.length < 1)
+		if (userLevels.data!.length < 1)
 			return interaction.editReply({
 				embeds: [embed.setDescription('No users found')]
 			});
@@ -28,7 +34,9 @@ export class LevelCommand extends KaeCommand {
 			embeds: [
 				embed.setDescription(
 					userLevels
-						.map((user, index) => `${index + 1}. **${interaction.client.users.cache.get(user.user.userId)}** - \`Level: ${user.level}\``)
+						.data!.map(
+							(user, index) => `${index + 1}. **${interaction.client.users.cache.get(user.user.userId)}** - \`Level: ${user.level}\``
+						)
 						.join('\n')
 				)
 			]

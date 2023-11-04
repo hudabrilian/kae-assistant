@@ -3,6 +3,7 @@ import { ApplicationCommandType, userMention } from 'discord.js';
 import KaeEmbed from '../../lib/structures/embeds/KaeEmbed';
 import { getImage } from '../../lib/utils/otaku';
 import { KaeCommand } from '../../lib/structures/commands/KaeCommand';
+import { StatusCode } from '../../lib/types/enum';
 
 @ApplyOptions<KaeCommand.Options>({
 	name: 'kiss',
@@ -52,7 +53,7 @@ export class KissCommand extends KaeCommand {
 
 		const kissImage = await getImage('kiss');
 
-		if (kissImage.status === 'error') return interaction.editReply(kissImage.message);
+		if (kissImage.status !== StatusCode.SUCCESS) return interaction.editReply(kissImage.message);
 
 		const embed = new KaeEmbed()
 			.setImage(kissImage.data!.url)
@@ -63,10 +64,7 @@ export class KissCommand extends KaeCommand {
 			);
 
 		return interaction.editReply({
-			embeds: [embed],
-			allowedMentions: {
-				users: [userToKiss.id, interaction.user.id]
-			}
+			embeds: [embed]
 		});
 	}
 }

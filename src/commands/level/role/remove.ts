@@ -1,6 +1,7 @@
 import { roleMention } from 'discord.js';
 import { KaeCommand } from '../../../lib/structures/commands/KaeCommand';
 import { getLevelRole, removeLevelRole } from '../../../lib/utils/levelRole';
+import { StatusCode } from '../../../lib/types/enum';
 
 export class RemoveRoleLevelCommand extends KaeCommand {
 	public constructor(context: KaeCommand.Context, options: KaeCommand.Options) {
@@ -30,15 +31,15 @@ export class RemoveRoleLevelCommand extends KaeCommand {
 
 		const guildLevel = await this.container.level.getLevelGuildByGuildId(interaction.guildId!);
 
-		if (!guildLevel) return interaction.editReply('Failed to remove role level. Level guild is not exist');
+		if (guildLevel.status !== StatusCode.SUCCESS) return interaction.editReply(guildLevel.message);
 
 		const guildLevelRole = await getLevelRole(interaction.guildId!, role.id, level);
 
-		if (!guildLevelRole) return interaction.editReply('Failed to remove role level. Role level is not exist');
+		if (guildLevelRole.status !== StatusCode.SUCCESS) return interaction.editReply(guildLevelRole.message);
 
 		const isSuccess = await removeLevelRole(role.id, level, interaction.guildId!);
 
-		if (!isSuccess) return interaction.editReply('Failed to remove role level');
+		if (isSuccess.status !== StatusCode.SUCCESS) return interaction.editReply(isSuccess.message);
 
 		return interaction.editReply(`Removed ${roleMention(role.id)} role for level ${level}`);
 	}

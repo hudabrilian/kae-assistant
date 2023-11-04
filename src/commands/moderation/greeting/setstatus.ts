@@ -1,4 +1,5 @@
 import { KaeCommand } from '../../../lib/structures/commands/KaeCommand';
+import { StatusCode } from '../../../lib/types/enum';
 import { changeStatus, generateEmbed, getGreetingsByGuildId } from '../../../lib/utils/greeting';
 
 export class SetStatusCommand extends KaeCommand {
@@ -24,18 +25,18 @@ export class SetStatusCommand extends KaeCommand {
 
 		const greeting = await getGreetingsByGuildId(interaction.guildId!);
 
-		if (!greeting) return interaction.editReply('Greeting not found');
+		if (greeting.status !== StatusCode.SUCCESS) return interaction.editReply(greeting.message);
 
 		const status = interaction.options.get('status', true).value;
 
-		const updateGreeting = await changeStatus(greeting.id, status as boolean);
+		const updateGreeting = await changeStatus(greeting.data!.id, status as boolean);
 
-		if (!updateGreeting) return interaction.editReply('Failed to change greeting status');
+		if (updateGreeting.status !== StatusCode.SUCCESS) return interaction.editReply(updateGreeting.message);
 
-		const welcomeChannel = interaction.guild!.channels.cache.get(updateGreeting.welcomeChannel as string)?.id;
-		const leaveChannel = interaction.guild!.channels.cache.get(updateGreeting.leaveChannel as string)?.id;
-		const welcomeEmbed = updateGreeting.welcomeEmbed?.name;
-		const leaveEmbed = updateGreeting.leaveEmbed?.name;
+		const welcomeChannel = interaction.guild!.channels.cache.get(updateGreeting.data!.welcomeChannel as string)?.id;
+		const leaveChannel = interaction.guild!.channels.cache.get(updateGreeting.data!.leaveChannel as string)?.id;
+		const welcomeEmbed = updateGreeting.data!.welcomeEmbed?.name;
+		const leaveEmbed = updateGreeting.data!.leaveEmbed?.name;
 
 		return interaction.editReply({
 			embeds: [
@@ -44,7 +45,7 @@ export class SetStatusCommand extends KaeCommand {
 					leaveChannel,
 					welcomeEmbed,
 					leaveEmbed,
-					status: updateGreeting.enabled
+					status: updateGreeting.data!.enabled
 				})
 			]
 		});

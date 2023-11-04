@@ -2,6 +2,8 @@ import { Prisma } from '@prisma/client';
 import { container } from '@sapphire/framework';
 import { APIEmbed, channelMention } from 'discord.js';
 import KaeEmbed from '../structures/embeds/KaeEmbed';
+import { StatusCode } from '../types/enum';
+import { Status } from '../types/types';
 
 export async function generateEmbed({
 	welcomeChannel,
@@ -40,16 +42,20 @@ export async function generateEmbed({
 		.toJSON();
 }
 
-export async function getGreetingsByGuildId(guildId: string): Promise<Prisma.GreetingGetPayload<{
-	select: {
-		id: true;
-		welcomeChannel: true;
-		leaveChannel: true;
-		welcomeEmbed: { select: { name: true } };
-		leaveEmbed: { select: { name: true } };
-		enabled: true;
-	};
-}> | null> {
+export async function getGreetingsByGuildId(guildId: string): Promise<
+	Status<
+		Prisma.GreetingGetPayload<{
+			select: {
+				id: true;
+				welcomeChannel: true;
+				leaveChannel: true;
+				welcomeEmbed: { select: { id: true; name: true } };
+				leaveEmbed: { select: { id: true; name: true } };
+				enabled: true;
+			};
+		}>
+	>
+> {
 	try {
 		const greetingsData = await container.prisma.greeting.findFirst({
 			where: {
@@ -63,11 +69,13 @@ export async function getGreetingsByGuildId(guildId: string): Promise<Prisma.Gre
 				leaveChannel: true,
 				welcomeEmbed: {
 					select: {
+						id: true,
 						name: true
 					}
 				},
 				leaveEmbed: {
 					select: {
+						id: true,
 						name: true
 					}
 				},
@@ -75,33 +83,43 @@ export async function getGreetingsByGuildId(guildId: string): Promise<Prisma.Gre
 			}
 		});
 
-		return greetingsData;
+		if (!greetingsData) return { status: StatusCode.NOT_FOUND, message: 'Greeting not found' };
+
+		return {
+			status: StatusCode.SUCCESS,
+			data: greetingsData
+		};
 	} catch (error) {
 		container.logger.error(error);
-		return null;
+		return {
+			status: StatusCode.ERROR,
+			message: 'Something went wrong'
+		};
 	}
 }
 
 export async function setWelcomeChannel(
 	guildId: string,
 	welcomeChannel: string
-): Promise<Prisma.GreetingGetPayload<{
-	select: {
-		welcomeChannel: true;
-		leaveChannel: true;
-		welcomeEmbed: { select: { name: true } };
-		leaveEmbed: { select: { name: true } };
-		enabled: true;
-	};
-}> | null> {
+): Promise<
+	Status<Prisma.GreetingGetPayload<{
+		select: {
+			welcomeChannel: true;
+			leaveChannel: true;
+			welcomeEmbed: { select: { name: true } };
+			leaveEmbed: { select: { name: true } };
+			enabled: true;
+		};
+	}> | null>
+> {
 	try {
 		const greetingData = await getGreetingsByGuildId(guildId);
 
-		if (!greetingData) return null;
+		if (greetingData.status !== StatusCode.SUCCESS) return greetingData;
 
 		const greeting = await container.prisma.greeting.upsert({
 			where: {
-				id: greetingData.id
+				id: greetingData.data!.id
 			},
 			update: {
 				welcomeChannel
@@ -127,33 +145,43 @@ export async function setWelcomeChannel(
 			}
 		});
 
-		return greeting;
+		return {
+			status: StatusCode.SUCCESS,
+			data: greeting
+		};
 	} catch (error) {
 		container.logger.error(error);
-		return null;
+		return {
+			status: StatusCode.ERROR,
+			message: 'Something went wrong'
+		};
 	}
 }
 
 export async function setWelcomeEmbed(
 	guildId: string,
 	welcomeEmbedId: string
-): Promise<Prisma.GreetingGetPayload<{
-	select: {
-		welcomeChannel: true;
-		leaveChannel: true;
-		welcomeEmbed: { select: { name: true } };
-		leaveEmbed: { select: { name: true } };
-		enabled: true;
-	};
-}> | null> {
+): Promise<
+	Status<
+		Prisma.GreetingGetPayload<{
+			select: {
+				welcomeChannel: true;
+				leaveChannel: true;
+				welcomeEmbed: { select: { name: true } };
+				leaveEmbed: { select: { name: true } };
+				enabled: true;
+			};
+		}>
+	>
+> {
 	try {
 		const greetingData = await getGreetingsByGuildId(guildId);
 
-		if (!greetingData) return null;
+		if (greetingData.status !== StatusCode.SUCCESS) return greetingData;
 
 		const greeting = await container.prisma.greeting.upsert({
 			where: {
-				id: greetingData.id
+				id: greetingData.data!.id
 			},
 			update: {
 				welcomeEmbedId
@@ -179,33 +207,43 @@ export async function setWelcomeEmbed(
 			}
 		});
 
-		return greeting;
+		return {
+			status: StatusCode.SUCCESS,
+			data: greeting
+		};
 	} catch (error) {
 		container.logger.error(error);
-		return null;
+		return {
+			status: StatusCode.ERROR,
+			message: 'Something went wrong'
+		};
 	}
 }
 
 export async function setLeaveChannel(
 	guildId: string,
 	leaveChannel: string
-): Promise<Prisma.GreetingGetPayload<{
-	select: {
-		welcomeChannel: true;
-		leaveChannel: true;
-		welcomeEmbed: { select: { name: true } };
-		leaveEmbed: { select: { name: true } };
-		enabled: true;
-	};
-}> | null> {
+): Promise<
+	Status<
+		Prisma.GreetingGetPayload<{
+			select: {
+				welcomeChannel: true;
+				leaveChannel: true;
+				welcomeEmbed: { select: { name: true } };
+				leaveEmbed: { select: { name: true } };
+				enabled: true;
+			};
+		}>
+	>
+> {
 	try {
 		const greetingData = await getGreetingsByGuildId(guildId);
 
-		if (!greetingData) return null;
+		if (greetingData.status !== StatusCode.SUCCESS) return greetingData;
 
 		const greeting = await container.prisma.greeting.upsert({
 			where: {
-				id: greetingData.id
+				id: greetingData.data!.id
 			},
 			update: {
 				leaveChannel
@@ -231,33 +269,43 @@ export async function setLeaveChannel(
 			}
 		});
 
-		return greeting;
+		return {
+			status: StatusCode.SUCCESS,
+			data: greeting
+		};
 	} catch (error) {
 		container.logger.error(error);
-		return null;
+		return {
+			status: StatusCode.ERROR,
+			message: 'Something went wrong'
+		};
 	}
 }
 
 export async function setLeaveEmbed(
 	guildId: string,
 	leaveEmbedId: string
-): Promise<Prisma.GreetingGetPayload<{
-	select: {
-		welcomeChannel: true;
-		leaveChannel: true;
-		welcomeEmbed: { select: { name: true } };
-		leaveEmbed: { select: { name: true } };
-		enabled: true;
-	};
-}> | null> {
+): Promise<
+	Status<
+		Prisma.GreetingGetPayload<{
+			select: {
+				welcomeChannel: true;
+				leaveChannel: true;
+				welcomeEmbed: { select: { name: true } };
+				leaveEmbed: { select: { name: true } };
+				enabled: true;
+			};
+		}>
+	>
+> {
 	try {
 		const greetingData = await getGreetingsByGuildId(guildId);
 
-		if (!greetingData) return null;
+		if (greetingData.status !== StatusCode.SUCCESS) return greetingData;
 
 		const greeting = await container.prisma.greeting.upsert({
 			where: {
-				id: greetingData.id
+				id: greetingData.data!.id
 			},
 			update: {
 				leaveEmbedId
@@ -283,25 +331,35 @@ export async function setLeaveEmbed(
 			}
 		});
 
-		return greeting;
+		return {
+			status: StatusCode.SUCCESS,
+			data: greeting
+		};
 	} catch (error) {
 		container.logger.error(error);
-		return null;
+		return {
+			status: StatusCode.ERROR,
+			message: 'Something went wrong'
+		};
 	}
 }
 
 export async function changeStatus(
 	greetingId: string,
 	status: boolean
-): Promise<Prisma.GreetingGetPayload<{
-	select: {
-		welcomeChannel: true;
-		leaveChannel: true;
-		welcomeEmbed: { select: { name: true } };
-		leaveEmbed: { select: { name: true } };
-		enabled: true;
-	};
-}> | null> {
+): Promise<
+	Status<
+		Prisma.GreetingGetPayload<{
+			select: {
+				welcomeChannel: true;
+				leaveChannel: true;
+				welcomeEmbed: { select: { name: true } };
+				leaveEmbed: { select: { name: true } };
+				enabled: true;
+			};
+		}>
+	>
+> {
 	try {
 		const greeting = await container.prisma.greeting.update({
 			where: {
@@ -327,9 +385,15 @@ export async function changeStatus(
 			}
 		});
 
-		return greeting;
+		return {
+			status: StatusCode.SUCCESS,
+			data: greeting
+		};
 	} catch (error) {
 		container.logger.error(error);
-		return null;
+		return {
+			status: StatusCode.ERROR,
+			message: 'Something went wrong'
+		};
 	}
 }

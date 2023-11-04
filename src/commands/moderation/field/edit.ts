@@ -1,4 +1,5 @@
 import { KaeCommand } from '../../../lib/structures/commands/KaeCommand';
+import { StatusCode } from '../../../lib/types/enum';
 import { getFieldByName, updateField } from '../../../lib/utils/field';
 
 export class EditCommand extends KaeCommand {
@@ -39,26 +40,28 @@ export class EditCommand extends KaeCommand {
 
 		const fieldData = await getFieldByName(fieldName, interaction.guildId!);
 
-		if (!fieldData) return interaction.editReply('Field not found');
+		if (fieldData.status !== StatusCode.SUCCESS) return interaction.editReply(fieldData.message);
 
 		switch (options) {
 			case 'fieldname':
-				fieldData.nameField = value;
+				fieldData.data!.nameField = value;
 				break;
 			case 'name':
-				fieldData.name = value;
+				fieldData.data!.name = value;
 				break;
 			case 'value':
-				fieldData.value = value;
+				fieldData.data!.value = value;
 				break;
 			case 'inline':
-				fieldData.inline = value === 'true';
+				fieldData.data!.inline = value === 'true';
 				break;
 		}
 
-		const { id: idField, guildId: guildIdField, ...newFieldData } = fieldData;
+		const { id: idField, guildId: guildIdField, ...newFieldData } = fieldData.data!;
 
-		await updateField(fieldData.id, newFieldData);
+		const isSuccess = await updateField(fieldData.data!.id, newFieldData);
+
+		if (isSuccess.status !== StatusCode.SUCCESS) return interaction.editReply(isSuccess.message);
 
 		return interaction.editReply(`Field property "${options}" updated to "${value}"`);
 	}

@@ -1,4 +1,5 @@
 import { KaeCommand } from '../../../lib/structures/commands/KaeCommand';
+import { StatusCode } from '../../../lib/types/enum';
 import { createEmbed, getEmbedByName } from '../../../lib/utils/embed';
 
 export class CreateCommand extends KaeCommand {
@@ -24,11 +25,11 @@ export class CreateCommand extends KaeCommand {
 
 		const embedData = await getEmbedByName(embedName, interaction.guildId!);
 
-		if (embedData) return interaction.editReply('Embed already exists');
+		if (embedData.status === StatusCode.SUCCESS && embedData.data) return interaction.editReply('Embed already exists');
 
 		const embed = await createEmbed(embedName, interaction.guildId!);
 
-		if (!embed) return interaction.editReply('Failed to create embed');
+		if (embed.status !== StatusCode.SUCCESS) return interaction.editReply(embed.message);
 
 		return interaction.editReply({ content: 'Embed successfully created' });
 	}

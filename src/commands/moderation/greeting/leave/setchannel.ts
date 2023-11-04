@@ -1,6 +1,7 @@
 import { ChannelType } from 'discord.js';
 import { KaeCommand } from '../../../../lib/structures/commands/KaeCommand';
 import { generateEmbed, setLeaveChannel } from '../../../../lib/utils/greeting';
+import { StatusCode } from '../../../../lib/types/enum';
 
 export class SetChannelCommand extends KaeCommand {
 	public constructor(context: KaeCommand.Context, options: KaeCommand.Options) {
@@ -33,19 +34,19 @@ export class SetChannelCommand extends KaeCommand {
 
 		const greeting = await setLeaveChannel(interaction.guildId!, channel.channel!.id);
 
-		if (!greeting) return interaction.editReply('Failed to update greeting settings');
+		if (greeting.status !== StatusCode.SUCCESS) return interaction.editReply(greeting.message);
 
-		const welcomeChannel = interaction.guild!.channels.cache.get(greeting.welcomeChannel as string)?.id;
-		const leaveChannel = interaction.guild!.channels.cache.get(greeting.leaveChannel as string)?.id;
+		const welcomeChannel = interaction.guild!.channels.cache.get(greeting.data!.welcomeChannel as string)?.id;
+		const leaveChannel = interaction.guild!.channels.cache.get(greeting.data!.leaveChannel as string)?.id;
 
 		return interaction.editReply({
 			embeds: [
 				await generateEmbed({
 					welcomeChannel: welcomeChannel!,
 					leaveChannel: leaveChannel!,
-					welcomeEmbed: greeting.welcomeEmbed?.name,
-					leaveEmbed: greeting.leaveEmbed?.name,
-					status: greeting.enabled
+					welcomeEmbed: greeting.data!.welcomeEmbed?.name,
+					leaveEmbed: greeting.data!.leaveEmbed?.name,
+					status: greeting.data!.enabled
 				})
 			]
 		});

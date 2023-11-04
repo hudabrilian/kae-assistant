@@ -2,6 +2,7 @@ import { roleMention } from 'discord.js';
 import { KaeCommand } from '../../../lib/structures/commands/KaeCommand';
 import KaeEmbed from '../../../lib/structures/embeds/KaeEmbed';
 import { getLevelRoles } from '../../../lib/utils/levelRole';
+import { StatusCode } from '../../../lib/types/enum';
 
 export class ListRoleLevelCommand extends KaeCommand {
 	public constructor(context: KaeCommand.Context, options: KaeCommand.Options) {
@@ -23,12 +24,19 @@ export class ListRoleLevelCommand extends KaeCommand {
 
 		const roles = await getLevelRoles(interaction.guildId!);
 
+		if (roles.status !== StatusCode.SUCCESS)
+			return interaction.editReply({
+				embeds: [new KaeEmbed().setTitle('Something went wrong').setDescription(roles.message)]
+			});
+
 		return interaction.editReply({
 			embeds: [
 				new KaeEmbed()
 					.setTitle('Role levels')
 					.setDescription(
-						roles.length > 0 ? roles.map((role) => `Level ${role.level}: ${roleMention(role.role)}`).join('\n') : 'No role levels'
+						roles.data!.length > 0
+							? roles.data!.map((role) => `Level ${role.level}: ${roleMention(role.role)}`).join('\n')
+							: 'No role levels'
 					)
 			]
 		});

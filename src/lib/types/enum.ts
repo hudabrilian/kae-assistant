@@ -12,3 +12,9 @@ export enum LevelEvents {
 	ADD_LEVEL = 'addLevel',
 	SUBTRACT_LEVEL = 'subtractLevel'
 }
+
+export enum StatusCode {
+	SUCCESS = 'success',
+	NOT_FOUND = 'not_found',
+	ERROR = 'error'
+}

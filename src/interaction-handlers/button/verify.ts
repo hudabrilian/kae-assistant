@@ -2,6 +2,7 @@ import { ApplyOptions } from '@sapphire/decorators';
 import { InteractionHandler, InteractionHandlerTypes } from '@sapphire/framework';
 import { ButtonInteraction, GuildMember } from 'discord.js';
 import { getVerifyByGuildId } from '../../lib/utils/verify';
+import { StatusCode } from '../../lib/types/enum';
 
 @ApplyOptions<InteractionHandler.Options>({
 	interactionHandlerType: InteractionHandlerTypes.Button,
@@ -15,12 +16,16 @@ export class ButtonHandler extends InteractionHandler {
 	}
 
 	public async run(interaction: ButtonInteraction) {
-		const guildVerify = await getVerifyByGuildId(interaction.guildId!);
 		const member = interaction.member as GuildMember;
+		const guildVerify = await getVerifyByGuildId(interaction.guildId!);
 
-		if (!guildVerify) return;
+		if (guildVerify.status !== StatusCode.SUCCESS)
+			return interaction.reply({
+				content: `Error: ${guildVerify.message}`,
+				ephemeral: true
+			});
 
-		const guildRole = interaction.guild!.roles.cache.find((role) => role.id === guildVerify.role);
+		const guildRole = interaction.guild!.roles.cache.find((role) => role.id === guildVerify.data!.role);
 
 		if (!guildRole)
 			return interaction.reply({
@@ -28,7 +33,7 @@ export class ButtonHandler extends InteractionHandler {
 				ephemeral: true
 			});
 
-		if (member.roles.cache.some((role) => role.id === guildVerify.role))
+		if (member.roles.cache.some((role) => role.id === guildVerify.data!.role))
 			return interaction.reply({
 				content: 'You already verified',
 				ephemeral: true

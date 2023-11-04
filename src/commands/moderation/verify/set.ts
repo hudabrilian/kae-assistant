@@ -11,6 +11,7 @@ import { KaeCommand } from '../../../lib/structures/commands/KaeCommand';
 import { generateEmbed } from '../../../lib/utils/embed';
 import { setVerify } from '../../../lib/utils/verify';
 import { getGuild } from '../../../lib/utils/guild';
+import { StatusCode } from '../../../lib/types/enum';
 
 export class SetCommand extends KaeCommand {
 	public constructor(context: KaeCommand.Context, options: KaeCommand.Options) {
@@ -47,11 +48,11 @@ export class SetCommand extends KaeCommand {
 
 		const guild = await getGuild(interaction.guildId!);
 
-		if (!guild) return interaction.editReply('Guild not found');
+		if (guild.status !== StatusCode.SUCCESS) return interaction.editReply(guild.message);
 
-		const guildVerify = await setVerify(guild.id, role.id);
+		const guildVerify = await setVerify(guild.data!.id, role.id);
 
-		if (!guildVerify) return interaction.editReply('Something went wrong');
+		if (guildVerify.status !== StatusCode.SUCCESS) return interaction.editReply(guildVerify.message);
 
 		const guildChannel = interaction.guild!.channels.cache.get(channel.id) as TextBasedChannel;
 
@@ -59,8 +60,8 @@ export class SetCommand extends KaeCommand {
 		if (content) options.content = content;
 		if (embed) {
 			const generatedEmbed = await generateEmbed(embed, interaction);
-			if (!generatedEmbed) return interaction.editReply('Failed to generate embed');
-			options.embeds = [generatedEmbed];
+			if (generatedEmbed.status !== StatusCode.SUCCESS) return interaction.editReply(generatedEmbed.message);
+			options.embeds = [generatedEmbed.data!];
 		}
 
 		if (!options.content && !options.embeds) return interaction.editReply('You must specify content or embed');

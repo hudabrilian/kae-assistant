@@ -1,13 +1,15 @@
 import { FetchResultTypes, fetch } from '@sapphire/fetch';
-import { Status, otakuApiResult } from '../types';
+import { otakuApiResult } from '../types';
 import { container } from '@sapphire/framework';
+import { StatusCode } from '../types/enum';
+import { Status } from '../types/types';
 
 export async function getImage(reaction: string): Promise<Status<{ url: string }>> {
 	try {
 		const image = await fetch<otakuApiResult>('https://api.otakugifs.xyz/gif?reaction=' + reaction, FetchResultTypes.JSON);
 
 		return {
-			status: 'success',
+			status: StatusCode.SUCCESS,
 			data: {
 				url: image.url
 			}
@@ -15,7 +17,7 @@ export async function getImage(reaction: string): Promise<Status<{ url: string }
 	} catch (error) {
 		container.logger.error(error);
 		return {
-			status: 'error',
+			status: StatusCode.ERROR,
 			message: 'Failed to get image'
 		};
 	}

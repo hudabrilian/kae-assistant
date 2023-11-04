@@ -1,4 +1,5 @@
 import { KaeCommand } from '../../../lib/structures/commands/KaeCommand';
+import { StatusCode } from '../../../lib/types/enum';
 import { getFieldByName, removeField } from '../../../lib/utils/field';
 
 export class RemoveCommand extends KaeCommand {
@@ -24,9 +25,9 @@ export class RemoveCommand extends KaeCommand {
 
 		const fieldData = await getFieldByName(fieldName, interaction.guildId!);
 
-		if (!fieldData) return interaction.editReply('Field is not exists');
+		if (fieldData.status !== StatusCode.SUCCESS) return interaction.editReply(fieldData.message);
 
-		await removeField(fieldData.id);
+		await removeField(fieldData.data!.id);
 
 		return interaction.editReply({ content: 'Field successfully removed' });
 	}

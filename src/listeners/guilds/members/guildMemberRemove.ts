@@ -2,35 +2,29 @@ import { ApplyOptions } from '@sapphire/decorators';
 import { Events, Listener } from '@sapphire/framework';
 import { GuildMember } from 'discord.js';
 import { generateEmbed } from '../../../lib/utils/embed';
+import { getGreetingsByGuildId } from '../../../lib/utils/greeting';
+import { StatusCode } from '../../../lib/types/enum';
 
 @ApplyOptions<Listener.Options>({
 	event: Events.GuildMemberRemove
 })
 export class GuildListener extends Listener<typeof Events.GuildMemberRemove> {
 	public async run(member: GuildMember): Promise<void> {
-		const greeting = await this.container.prisma.greeting.findFirst({
-			where: {
-				guild: {
-					guildId: member.guild.id
-				}
-			},
-			select: {
-				enabled: true,
-				leaveChannel: true,
-				leaveEmbed: true
-			}
-		});
+		const greeting = await getGreetingsByGuildId(member.guild.id);
 
-		if (!greeting) return;
+		if (greeting.status !== StatusCode.SUCCESS) {
+			this.container.logger.warn(greeting.message);
+			return;
+		}
 
-		const leaveChannel = member.guild.channels.cache.get(greeting.leaveChannel as string);
+		const leaveChannel = member.guild.channels.cache.get(greeting.data!.leaveChannel as string);
 
-		if (!greeting.enabled || !leaveChannel!.isTextBased() || !greeting.leaveChannel || !greeting.leaveEmbed) return;
+		if (!greeting.data!.enabled || !leaveChannel!.isTextBased() || !greeting.data!.leaveChannel || !greeting.data!.leaveEmbed) return;
 
-		const embed = await generateEmbed(greeting.leaveEmbed.id, member);
+		const embed = await generateEmbed(greeting.data!.leaveEmbed.id, member);
 
-		if (!embed) return this.container.logger.warn('Failed generate embed to send leave greeting');
+		if (embed.status !== StatusCode.SUCCESS) return this.container.logger.warn('Failed generate embed to send leave greeting');
 
-		await leaveChannel.send({ embeds: [embed] });
+		await leaveChannel.send({ embeds: [embed.data!] });
 	}
 }

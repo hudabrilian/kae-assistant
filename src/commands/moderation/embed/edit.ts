@@ -1,6 +1,7 @@
 import { ColorResolvable } from 'discord.js';
 import { KaeCommand } from '../../../lib/structures/commands/KaeCommand';
 import { getEmbedByName, updateEmbed } from '../../../lib/utils/embed';
+import { StatusCode } from '../../../lib/types/enum';
 
 export class EditCommand extends KaeCommand {
 	public constructor(context: KaeCommand.Context, options: KaeCommand.Options) {
@@ -49,56 +50,58 @@ export class EditCommand extends KaeCommand {
 
 		const embedData = await getEmbedByName(embedName, interaction.guildId!);
 
-		if (!embedData) return interaction.editReply('Embed not found');
+		if (embedData.status !== StatusCode.SUCCESS) return interaction.editReply(embedData.message);
 
 		switch (options) {
 			case 'name':
-				embedData.name = value === 'null' ? embedName : value;
+				embedData.data!.name = value === 'null' ? embedName : value;
 				break;
 			case 'title':
-				embedData.title = value === 'null' ? null : value;
+				embedData.data!.title = value === 'null' ? null : value;
 				break;
 			case 'url':
-				embedData.url = value === 'null' ? null : value;
+				embedData.data!.url = value === 'null' ? null : value;
 				break;
 			case 'author':
-				embedData.author = value === 'null' ? null : value;
+				embedData.data!.author = value === 'null' ? null : value;
 				break;
 			case 'authorIconURL':
-				embedData.authorIconURL = value === 'null' ? null : value;
+				embedData.data!.authorIconURL = value === 'null' ? null : value;
 				break;
 			case 'authorURL':
-				embedData.authorURL = value === 'null' ? null : value;
+				embedData.data!.authorURL = value === 'null' ? null : value;
 				break;
 			case 'description':
-				embedData.description = value === 'null' ? null : value;
+				embedData.data!.description = value === 'null' ? null : value;
 				break;
 			case 'color':
-				embedData.color = value === 'null' ? null : (value as ColorResolvable as string);
+				embedData.data!.color = value === 'null' ? null : (value as ColorResolvable as string);
 				break;
 			case 'image':
-				embedData.image = value === 'null' ? null : value;
+				embedData.data!.image = value === 'null' ? null : value;
 				break;
 			case 'footer':
-				embedData.footer = value === 'null' ? null : value;
+				embedData.data!.footer = value === 'null' ? null : value;
 				break;
 			case 'footerIconURL':
-				embedData.footerIconURL = value === 'null' ? null : value;
+				embedData.data!.footerIconURL = value === 'null' ? null : value;
 				break;
 			case 'thumbnail':
-				embedData.thumbnail = value === 'null' ? null : value;
+				embedData.data!.thumbnail = value === 'null' ? null : value;
 				break;
 			case 'timestamp':
-				embedData.timestamp = value === 'null' ? null : value.toLowerCase() === 'true';
+				embedData.data!.timestamp = value === 'null' ? null : value.toLowerCase() === 'true';
 				break;
 			default:
 				await interaction.reply('Invalid option.');
 				return;
 		}
 
-		const { id: idEmbed, guildId: guildIdEmbed, ...newEmbedData } = embedData;
+		const { id: idEmbed, guildId: guildIdEmbed, ...newEmbedData } = embedData.data!;
 
-		await updateEmbed(idEmbed, newEmbedData);
+		const isSuccess = await updateEmbed(idEmbed, newEmbedData);
+
+		if (isSuccess.status !== StatusCode.SUCCESS) return interaction.editReply(isSuccess.message);
 
 		return interaction.editReply(`Embed property "${options}" updated to "${value}"`);
 	}

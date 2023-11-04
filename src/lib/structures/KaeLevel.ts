@@ -1,7 +1,8 @@
 import { GuildLevel, Prisma, UserLevel } from '@prisma/client';
-import { type Container } from '@sapphire/pieces';
-import { LevelEvents } from '../types/enum';
 import { container as c } from '@sapphire/framework';
+import { type Container } from '@sapphire/pieces';
+import { LevelEvents, StatusCode } from '../types/enum';
+import { Status } from '../types/types';
 
 export class KaeLevel {
 	private baseXp: number = 100;
@@ -11,55 +12,84 @@ export class KaeLevel {
 		this.container = c;
 	}
 
-	public async getLevelGuildByGuildId(guildId: string): Promise<GuildLevel | null> {
+	public async getLevelGuildByGuildId(guildId: string): Promise<Status<GuildLevel>> {
 		try {
-			return await this.container.prisma.guildLevel.findFirst({
+			const guildLevel = await this.container.prisma.guildLevel.findFirst({
 				where: {
 					guild: {
 						guildId
 					}
 				}
 			});
+
+			if (!guildLevel)
+				return {
+					status: StatusCode.NOT_FOUND,
+					message: 'Guild level not found'
+				};
+
+			return {
+				status: StatusCode.SUCCESS,
+				data: guildLevel
+			};
 		} catch (error) {
 			this.container.logger.error(error);
-			return null;
+			return {
+				status: StatusCode.ERROR,
+				message: 'Something went wrong'
+			};
 		}
 	}
 
-	public async setLevelGuild(guildId: string, status: boolean): Promise<void> {
+	public async setLevelGuild(guildId: string, status: boolean): Promise<Status> {
 		try {
 			const levelGuild = await this.getLevelGuildByGuildId(guildId);
 
-			if (levelGuild) {
-				await this.container.prisma.guildLevel.update({
-					where: {
-						id: levelGuild.id
-					},
+			if (levelGuild.status === StatusCode.NOT_FOUND) {
+				await this.container.prisma.guildLevel.create({
 					data: {
+						guild: {
+							connect: {
+								guildId
+							}
+						},
 						status
 					}
 				});
-				return;
+
+				return {
+					status: StatusCode.SUCCESS,
+					message: 'Successfully update guild level settings'
+				};
 			}
 
-			await this.container.prisma.guildLevel.create({
+			if (levelGuild.status !== StatusCode.SUCCESS) return levelGuild;
+
+			await this.container.prisma.guildLevel.update({
+				where: {
+					id: levelGuild.data!.id
+				},
 				data: {
-					guild: {
-						connect: {
-							guildId
-						}
-					},
 					status
 				}
 			});
+
+			return {
+				status: StatusCode.SUCCESS,
+				message: 'Successfully update guild level settings'
+			};
 		} catch (error) {
 			this.container.logger.error(error);
+			return {
+				status: StatusCode.ERROR,
+				message: 'Something went wrong'
+			};
 		}
 	}
 
-	public async getUserLevel(userId: string, guildId: string): Promise<UserLevel | null> {
+	public async getUserLevel(userId: string, guildId: string): Promise<Status<UserLevel>> {
 		try {
-			return await this.container.prisma.userLevel.findFirst({
+			const userLevel = await this.container.prisma.userLevel.findFirst({
 				where: {
 					AND: {
 						user: {
@@ -71,15 +101,29 @@ export class KaeLevel {
 					}
 				}
 			});
+
+			if (!userLevel)
+				return {
+					status: StatusCode.NOT_FOUND,
+					message: 'User level not found'
+				};
+
+			return {
+				status: StatusCode.SUCCESS,
+				data: userLevel
+			};
 		} catch (error) {
 			this.container.logger.error(error);
-			return null;
+			return {
+				status: StatusCode.ERROR,
+				message: 'Something went wrong'
+			};
 		}
 	}
 
-	public async createUserLevel(userId: string, guildId: string): Promise<UserLevel | null> {
+	public async createUserLevel(userId: string, guildId: string): Promise<Status<UserLevel>> {
 		try {
-			return await this.container.prisma.userLevel.create({
+			const userLevel = await this.container.prisma.userLevel.create({
 				data: {
 					user: {
 						connect: {
@@ -95,9 +139,17 @@ export class KaeLevel {
 					level: 1
 				}
 			});
+
+			return {
+				status: StatusCode.SUCCESS,
+				data: userLevel
+			};
 		} catch (error) {
 			this.container.logger.error(error);
-			return null;
+			return {
+				status: StatusCode.ERROR,
+				message: 'Something went wrong'
+			};
 		}
 	}
 
@@ -108,167 +160,273 @@ export class KaeLevel {
 	public async checkLevelUp(userId: string, guildId: string): Promise<boolean> {
 		const userLevel = await this.getUserLevel(userId, guildId);
 
-		if (!userLevel) return false;
+		if (userLevel.status !== StatusCode.SUCCESS) return false;
 
-		const xpNextLevel = await this.calculateXpLevel(userLevel.level + 1);
+		const xpNextLevel = await this.calculateXpLevel(userLevel.data!.level + 1);
 
-		return userLevel.xp >= xpNextLevel;
+		return userLevel.data!.xp >= xpNextLevel;
 	}
 
-	public async addXpUser(userId: string, guildId: string, xp?: number) {
-		const userLevel = await this.getUserLevel(userId, guildId);
+	public async addXpUser(userId: string, guildId: string, xp?: number): Promise<Status> {
+		try {
+			const userLevel = await this.getUserLevel(userId, guildId);
 
-		if (!userLevel) return;
+			if (userLevel.status !== StatusCode.SUCCESS) return userLevel;
 
-		const xpGain = xp ?? Math.floor(Math.random() * 10) + 1;
+			const xpGain = xp ?? Math.floor(Math.random() * 10) + 1;
 
-		await this.container.prisma.userLevel.update({
-			where: {
-				id: userLevel.id
-			},
-			data: {
-				xp: {
-					increment: xpGain
-				}
-			}
-		});
-
-		this.container.client.emit(LevelEvents.ADD_XP, {
-			user: userLevel,
-			xp: xpGain
-		});
-	}
-
-	public async setXpUser(userId: string, guildId: string, xp: number): Promise<void> {
-		const userLevel = await this.getUserLevel(userId, guildId);
-
-		if (!userLevel || xp <= 0) return;
-
-		await this.container.prisma.userLevel.update({
-			where: {
-				id: userLevel.id
-			},
-			data: {
-				xp: {
-					set: xp
-				}
-			}
-		});
-
-		this.container.client.emit(LevelEvents.SET_XP, {
-			user: userLevel,
-			xp
-		});
-	}
-
-	public async subtractXpUser(userId: string, guildId: string, xp: number): Promise<void> {
-		const userLevel = await this.getUserLevel(userId, guildId);
-
-		if (!userLevel || xp <= 0) return;
-
-		await this.container.prisma.userLevel.update({
-			where: {
-				id: userLevel.id
-			},
-			data: {
-				xp: {
-					decrement: xp
-				}
-			}
-		});
-
-		this.container.client.emit(LevelEvents.SUBTRACT_XP, {
-			user: userLevel,
-			xp
-		});
-	}
-
-	public async setLevelUser(userId: string, guildId: string, level: number): Promise<void> {
-		const userLevel = await this.getUserLevel(userId, guildId);
-
-		if (!userLevel || level <= 0) return;
-
-		await this.container.prisma.userLevel.update({
-			where: {
-				id: userLevel.id
-			},
-			data: {
-				level: {
-					set: level
-				}
-			}
-		});
-
-		this.container.client.emit(LevelEvents.SET_LEVEL, {
-			user: userLevel,
-			level
-		});
-	}
-
-	public async addLevelUser(userId: string, guildId: string, level?: number, xp: boolean = true): Promise<void> {
-		const userLevel = await this.getUserLevel(userId, guildId);
-
-		if (!userLevel) return;
-
-		if (!level) level = 1;
-
-		await this.container.prisma.userLevel.update({
-			where: {
-				id: userLevel.id
-			},
-			data: {
-				xp: {
-					increment: xp ? level * 100 : 0
+			await this.container.prisma.userLevel.update({
+				where: {
+					id: userLevel.data!.id
 				},
-				level: {
-					increment: level
+				data: {
+					xp: {
+						increment: xpGain
+					}
 				}
-			}
-		});
+			});
 
-		this.container.client.emit(LevelEvents.ADD_LEVEL, {
-			user: userLevel,
-			level
-		});
+			this.container.client.emit(LevelEvents.ADD_XP, {
+				user: userLevel.data,
+				xp: xpGain
+			});
+
+			return {
+				status: StatusCode.SUCCESS
+			};
+		} catch (error) {
+			this.container.logger.error(error);
+			return {
+				status: StatusCode.ERROR,
+				message: 'Something went wrong'
+			};
+		}
 	}
 
-	public async subtractLevelUser(userId: string, guildId: string, level: number): Promise<void> {
-		const userLevel = await this.getUserLevel(userId, guildId);
+	public async setXpUser(userId: string, guildId: string, xp: number): Promise<Status> {
+		try {
+			const userLevel = await this.getUserLevel(userId, guildId);
 
-		if (!userLevel || level < 1) return;
+			if (userLevel.status !== StatusCode.SUCCESS) return userLevel;
 
-		await this.container.prisma.userLevel.update({
-			where: {
-				id: userLevel.id
-			},
-			data: {
-				xp: {
-					increment: level * 100
+			if (xp <= 0)
+				return {
+					status: StatusCode.ERROR,
+					message: 'Xp must greater than or equals 1'
+				};
+
+			await this.container.prisma.userLevel.update({
+				where: {
+					id: userLevel.data!.id
 				},
-				level: {
-					decrement: level
+				data: {
+					xp: {
+						set: xp
+					}
 				}
-			}
-		});
+			});
 
-		this.container.client.emit(LevelEvents.SUBTRACT_LEVEL, {
-			user: userLevel,
-			level
-		});
+			this.container.client.emit(LevelEvents.SET_XP, {
+				user: userLevel.data,
+				xp
+			});
+
+			return {
+				status: StatusCode.SUCCESS
+			};
+		} catch (error) {
+			this.container.logger.error(error);
+			return {
+				status: StatusCode.ERROR,
+				message: 'Something went wrong'
+			};
+		}
+	}
+
+	public async subtractXpUser(userId: string, guildId: string, xp: number): Promise<Status> {
+		try {
+			const userLevel = await this.getUserLevel(userId, guildId);
+
+			if (userLevel.status !== StatusCode.SUCCESS) return userLevel;
+
+			if (xp <= 0)
+				return {
+					status: StatusCode.ERROR,
+					message: 'Xp must greater than or equals 1'
+				};
+
+			await this.container.prisma.userLevel.update({
+				where: {
+					id: userLevel.data!.id
+				},
+				data: {
+					xp: {
+						decrement: xp
+					}
+				}
+			});
+
+			this.container.client.emit(LevelEvents.SUBTRACT_XP, {
+				user: userLevel.data,
+				xp
+			});
+
+			return {
+				status: StatusCode.SUCCESS
+			};
+		} catch (error) {
+			this.container.logger.error(error);
+			return {
+				status: StatusCode.ERROR,
+				message: 'Something went wrong'
+			};
+		}
+	}
+
+	public async setLevelUser(userId: string, guildId: string, level: number): Promise<Status> {
+		try {
+			const userLevel = await this.getUserLevel(userId, guildId);
+
+			if (userLevel.status !== StatusCode.SUCCESS) return userLevel;
+
+			if (level <= 0)
+				return {
+					status: StatusCode.ERROR,
+					message: 'Level must greater than or equals 1'
+				};
+
+			await this.container.prisma.userLevel.update({
+				where: {
+					id: userLevel.data!.id
+				},
+				data: {
+					level: {
+						set: level
+					}
+				}
+			});
+
+			this.container.client.emit(LevelEvents.SET_LEVEL, {
+				user: userLevel.data,
+				level
+			});
+
+			return {
+				status: StatusCode.SUCCESS
+			};
+		} catch (error) {
+			this.container.logger.error(error);
+			return {
+				status: StatusCode.ERROR,
+				message: 'Something went wrong'
+			};
+		}
+	}
+
+	public async addLevelUser(userId: string, guildId: string, level?: number, xp: boolean = true): Promise<Status> {
+		try {
+			const userLevel = await this.getUserLevel(userId, guildId);
+
+			if (userLevel.status !== StatusCode.SUCCESS) return userLevel;
+
+			if (!level) level = 1;
+
+			if (level <= 0)
+				return {
+					status: StatusCode.ERROR,
+					message: 'Level must greater than or equals 1'
+				};
+
+			await this.container.prisma.userLevel.update({
+				where: {
+					id: userLevel.data!.id
+				},
+				data: {
+					xp: {
+						increment: xp ? level * 100 : 0
+					},
+					level: {
+						increment: level
+					}
+				}
+			});
+
+			this.container.client.emit(LevelEvents.ADD_LEVEL, {
+				user: userLevel.data,
+				level
+			});
+
+			return {
+				status: StatusCode.SUCCESS
+			};
+		} catch (error) {
+			this.container.logger.error(error);
+			return {
+				status: StatusCode.ERROR,
+				message: 'Something went wrong'
+			};
+		}
+	}
+
+	public async subtractLevelUser(userId: string, guildId: string, level: number): Promise<Status> {
+		try {
+			const userLevel = await this.getUserLevel(userId, guildId);
+
+			if (userLevel.status !== StatusCode.SUCCESS) return userLevel;
+
+			if (!level) level = 1;
+
+			if (level <= 0)
+				return {
+					status: StatusCode.ERROR,
+					message: 'Level must greater than or equals 1'
+				};
+
+			await this.container.prisma.userLevel.update({
+				where: {
+					id: userLevel.data!.id
+				},
+				data: {
+					xp: {
+						increment: level * 100
+					},
+					level: {
+						decrement: level
+					}
+				}
+			});
+
+			this.container.client.emit(LevelEvents.SUBTRACT_LEVEL, {
+				user: userLevel.data,
+				level
+			});
+
+			return {
+				status: StatusCode.SUCCESS
+			};
+		} catch (error) {
+			this.container.logger.error(error);
+			return {
+				status: StatusCode.ERROR,
+				message: 'Something went wrong'
+			};
+		}
 	}
 
 	public async getLeaderboard(
 		guildId: string,
 		limit: number = 10
 	): Promise<
-		Prisma.UserLevelGetPayload<{
-			include: {
-				user: true;
-			};
-		}>[]
+		Status<
+			Prisma.UserLevelGetPayload<{
+				include: {
+					user: true;
+				};
+			}>[]
+		>
 	> {
 		try {
-			return await this.container.prisma.userLevel.findMany({
+			const userLevels = await this.container.prisma.userLevel.findMany({
 				where: {
 					guild: {
 						guildId
@@ -282,9 +440,17 @@ export class KaeLevel {
 				},
 				take: limit
 			});
+
+			return {
+				status: StatusCode.SUCCESS,
+				data: userLevels
+			};
 		} catch (error) {
 			this.container.logger.error(error);
-			return [];
+			return {
+				status: StatusCode.ERROR,
+				message: 'Something went wrong'
+			};
 		}
 	}
 }

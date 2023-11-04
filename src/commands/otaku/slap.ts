@@ -3,6 +3,7 @@ import { KaeCommand } from '../../lib/structures/commands/KaeCommand';
 import { ApplicationCommandType, userMention } from 'discord.js';
 import { getImage } from '../../lib/utils/otaku';
 import KaeEmbed from '../../lib/structures/embeds/KaeEmbed';
+import { StatusCode } from '../../lib/types/enum';
 
 @ApplyOptions<KaeCommand.Options>({
 	name: 'slap',
@@ -51,7 +52,7 @@ export class SlapCommand extends KaeCommand {
 
 		const slapImage = await getImage('slap');
 
-		if (slapImage.status === 'error') return interaction.editReply(slapImage.message);
+		if (slapImage.status !== StatusCode.SUCCESS) return interaction.editReply(slapImage.message);
 
 		const embed = new KaeEmbed()
 			.setImage(slapImage.data!.url)
@@ -62,10 +63,7 @@ export class SlapCommand extends KaeCommand {
 			);
 
 		return interaction.editReply({
-			embeds: [embed],
-			allowedMentions: {
-				users: [userToSlap.id, interaction.user.id]
-			}
+			embeds: [embed]
 		});
 	}
 }

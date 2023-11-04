@@ -1,4 +1,5 @@
 import { KaeCommand } from '../../../lib/structures/commands/KaeCommand';
+import { StatusCode } from '../../../lib/types/enum';
 import { addField, getEmbedByName } from '../../../lib/utils/embed';
 import { getFieldByName } from '../../../lib/utils/field';
 
@@ -27,13 +28,13 @@ export class AddFieldCommand extends KaeCommand {
 
 		const embedData = await getEmbedByName(embedName, interaction.guildId!);
 
-		if (!embedData) return interaction.editReply('Embed not found');
+		if (embedData.status !== StatusCode.SUCCESS) return interaction.editReply(embedData.message);
 
 		const fieldData = await getFieldByName(fieldName, interaction.guildId!);
 
-		if (!fieldData) return interaction.editReply('Field not found');
+		if (fieldData.status !== StatusCode.SUCCESS) return interaction.editReply(fieldData.message);
 
-		await addField(embedData.id, fieldData.id);
+		await addField(embedData.data!.id, fieldData.data!.id);
 
 		return interaction.editReply({ content: 'Field successfully added' });
 	}

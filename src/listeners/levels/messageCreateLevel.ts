@@ -1,7 +1,7 @@
 import { ApplyOptions } from '@sapphire/decorators';
 import { Events, Listener } from '@sapphire/framework';
 import { Message } from 'discord.js';
-import { LevelEvents } from '../../lib/types/enum';
+import { LevelEvents, StatusCode } from '../../lib/types/enum';
 
 @ApplyOptions<Listener.Options>({
 	event: Events.MessageCreate,
@@ -13,11 +13,11 @@ export class LevelsListener extends Listener<typeof Events.MessageCreate> {
 
 		const levelGuild = await this.container.level.getLevelGuildByGuildId(message.guildId!);
 
-		if (!levelGuild) return;
+		if (levelGuild.status !== StatusCode.SUCCESS) return;
 
 		const userLevel = await this.container.level.getUserLevel(message.author.id, message.guildId!);
 
-		if (!userLevel) {
+		if (userLevel.status !== StatusCode.SUCCESS) {
 			this.container.level.createUserLevel(message.author.id, message.guildId!);
 			return;
 		}
@@ -29,7 +29,7 @@ export class LevelsListener extends Listener<typeof Events.MessageCreate> {
 
 			this.container.client.emit(LevelEvents.LEVEL_UP, message, {
 				user: userLevel,
-				level: userLevel.level + 1
+				level: userLevel.data!.level + 1
 			});
 			return;
 		}

@@ -2,24 +2,35 @@ import { Guild, LanguageTag } from '@prisma/client';
 import { container } from '@sapphire/framework';
 import { getEnumValueFromStringValue } from '../utils';
 import { Language } from '../types/enum';
+import { StatusCode } from '../types/enum';
+import { Status } from '../types/types';
 
-export async function getGuild(guildId: string): Promise<Guild | null> {
+export async function getGuild(guildId: string): Promise<Status<Guild | null>> {
 	try {
 		const guild = await container.prisma.guild.findUnique({
 			where: {
 				guildId
 			}
 		});
-		return guild;
+
+		if (!guild) return { status: StatusCode.NOT_FOUND, message: 'Guild not found' };
+
+		return {
+			status: StatusCode.SUCCESS,
+			data: guild
+		};
 	} catch (error) {
 		container.logger.error(error);
-		return null;
+		return {
+			status: StatusCode.ERROR,
+			message: 'Something went wrong'
+		};
 	}
 }
 
-export async function editGuildLanguage(guildId: string, language: Language): Promise<boolean> {
+export async function editGuildLanguage(guildId: string, language: Language): Promise<Status> {
 	try {
-		const guild = await container.prisma.guild.update({
+		await container.prisma.guild.update({
 			where: {
 				guildId
 			},
@@ -28,9 +39,14 @@ export async function editGuildLanguage(guildId: string, language: Language): Pr
 			}
 		});
 
-		return !!guild;
+		return {
+			status: StatusCode.SUCCESS
+		};
 	} catch (error) {
 		container.logger.error(error);
-		return false;
+		return {
+			status: StatusCode.ERROR,
+			message: 'Something went wrong'
+		};
 	}
 }

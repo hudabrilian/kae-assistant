@@ -1,11 +1,13 @@
 import { GuildLevelRole, Prisma } from '@prisma/client';
 import { container } from '@sapphire/framework';
+import { StatusCode } from '../types/enum';
+import { Status } from '../types/types';
 
-export async function addLevelRole(roleId: string, level: number, guildId: string): Promise<GuildLevelRole | null> {
+export async function addLevelRole(roleId: string, level: number, guildId: string): Promise<Status<GuildLevelRole>> {
 	try {
 		const guildLevel = await container.level.getLevelGuildByGuildId(guildId);
 
-		if (!guildLevel) return null;
+		if (guildLevel.status !== StatusCode.SUCCESS) return guildLevel;
 
 		const levelRole = await container.prisma.guildLevelRole.create({
 			data: {
@@ -13,28 +15,34 @@ export async function addLevelRole(roleId: string, level: number, guildId: strin
 				level,
 				guild: {
 					connect: {
-						id: guildLevel.id
+						id: guildLevel.data!.id
 					}
 				}
 			}
 		});
 
-		return levelRole;
+		return {
+			status: StatusCode.SUCCESS,
+			data: levelRole
+		};
 	} catch (error) {
 		container.logger.error(error);
-		return null;
+		return {
+			status: StatusCode.ERROR,
+			message: 'Something went wrong'
+		};
 	}
 }
 
-export async function getLevelRole(guildId: string, roleId?: string, level?: number): Promise<GuildLevelRole | null> {
+export async function getLevelRole(guildId: string, roleId?: string, level?: number): Promise<Status<GuildLevelRole>> {
 	try {
 		const guildLevel = await container.level.getLevelGuildByGuildId(guildId);
 
-		if (!guildLevel) return null;
+		if (guildLevel.status !== StatusCode.SUCCESS) return guildLevel;
 
 		const where: Prisma.GuildLevelRoleWhereInput = {
 			guild: {
-				id: guildLevel.id
+				id: guildLevel.data!.id
 			}
 		};
 
@@ -46,76 +54,117 @@ export async function getLevelRole(guildId: string, roleId?: string, level?: num
 			where.level = level;
 		}
 
-		return await container.prisma.guildLevelRole.findFirst({
+		const guildLevelRole = await container.prisma.guildLevelRole.findFirst({
 			where: where
 		});
+
+		if (!guildLevelRole)
+			return {
+				status: StatusCode.NOT_FOUND,
+				message: 'Guild level role not found'
+			};
+
+		return {
+			status: StatusCode.SUCCESS,
+			data: guildLevelRole
+		};
 	} catch (error) {
 		container.logger.error(error);
-		return null;
+		return {
+			status: StatusCode.ERROR,
+			message: 'Something went wrong'
+		};
 	}
 }
 
-export async function getLevelRoleByLevel(guildId: string, level: number): Promise<GuildLevelRole | null> {
+export async function getLevelRoleByLevel(guildId: string, level: number): Promise<Status<GuildLevelRole>> {
 	try {
 		const guildLevel = await container.level.getLevelGuildByGuildId(guildId);
 
-		if (!guildLevel) return null;
+		if (guildLevel.status !== StatusCode.SUCCESS) return guildLevel;
 
-		return await container.prisma.guildLevelRole.findFirst({
+		const guildLevelRole = await container.prisma.guildLevelRole.findFirst({
 			where: {
 				guild: {
-					id: guildLevel.id
+					id: guildLevel.data!.id
 				},
 				level
 			}
 		});
+
+		if (!guildLevelRole)
+			return {
+				status: StatusCode.NOT_FOUND,
+				message: 'Guild Level role not found'
+			};
+
+		return {
+			status: StatusCode.SUCCESS,
+			data: guildLevelRole
+		};
 	} catch (error) {
 		container.logger.error(error);
-		return null;
+		return {
+			status: StatusCode.ERROR,
+			message: 'Something went wrong'
+		};
 	}
 }
 
-export async function getLevelRoles(guildId: string): Promise<GuildLevelRole[]> {
+export async function getLevelRoles(guildId: string): Promise<Status<GuildLevelRole[]>> {
 	try {
 		const guildLevel = await container.level.getLevelGuildByGuildId(guildId);
 
-		if (!guildLevel) return [];
+		if (guildLevel.status !== StatusCode.SUCCESS) return guildLevel;
 
-		return await container.prisma.guildLevelRole.findMany({
+		const guildLevelRoles = await container.prisma.guildLevelRole.findMany({
 			where: {
 				guild: {
-					id: guildLevel.id
+					id: guildLevel.data!.id
 				}
 			},
 			orderBy: {
 				level: 'asc'
 			}
 		});
+
+		return {
+			status: StatusCode.SUCCESS,
+			data: guildLevelRoles
+		};
 	} catch (error) {
 		container.logger.error(error);
-		return [];
+		return {
+			status: StatusCode.ERROR,
+			message: 'Something went wrong'
+		};
 	}
 }
 
-export async function removeLevelRole(roleId: string, level: number, guildId: string): Promise<boolean> {
+export async function removeLevelRole(roleId: string, level: number, guildId: string): Promise<Status> {
 	try {
 		const guildLevel = await container.level.getLevelGuildByGuildId(guildId);
 
-		if (!guildLevel) return false;
+		if (guildLevel.status !== StatusCode.SUCCESS) return guildLevel;
 
 		const guildLevelRole = await getLevelRole(guildId, roleId, level);
 
-		if (!guildLevelRole) return false;
+		if (guildLevelRole.status !== StatusCode.SUCCESS) return guildLevelRole;
 
 		await container.prisma.guildLevelRole.delete({
 			where: {
-				id: guildLevelRole.id
+				id: guildLevelRole.data!.id
 			}
 		});
 
-		return true;
+		return {
+			status: StatusCode.SUCCESS
+		};
 	} catch (error) {
 		container.logger.error(error);
-		return false;
+		return {
+			status: StatusCode.ERROR,
+			message: 'Something went wrong'
+		};
 	}
 }

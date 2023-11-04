@@ -1,4 +1,5 @@
 import { KaeCommand } from '../../../lib/structures/commands/KaeCommand';
+import { StatusCode } from '../../../lib/types/enum';
 import { generateEmbed, getEmbedByName } from '../../../lib/utils/embed';
 
 export class InfoCommand extends KaeCommand {
@@ -24,12 +25,12 @@ export class InfoCommand extends KaeCommand {
 
 		const embedData = await getEmbedByName(embedName, interaction.guildId!);
 
-		if (!embedData) return interaction.editReply('Embed not found');
+		if (embedData.status !== StatusCode.SUCCESS) return interaction.editReply(embedData.message);
 
-		const embed = await generateEmbed(embedData.id, interaction);
+		const embed = await generateEmbed(embedData.data!.id, interaction);
 
-		if (!embed) return interaction.editReply('Failed to create embed');
+		if (embed.status !== StatusCode.SUCCESS) return interaction.editReply(embed.message);
 
-		return interaction.editReply({ embeds: [embed] });
+		return interaction.editReply({ embeds: [embed.data!] });
 	}
 }

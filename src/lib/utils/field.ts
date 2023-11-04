@@ -1,5 +1,7 @@
 import { Field, Prisma } from '@prisma/client';
 import { container } from '@sapphire/framework';
+import { StatusCode } from '../types/enum';
+import { Status } from '../types/types';
 
 export async function getFieldByGuildId(guildId: string): Promise<{ name: string }[]> {
 	try {
@@ -22,7 +24,7 @@ export async function getFieldByGuildId(guildId: string): Promise<{ name: string
 	}
 }
 
-export async function getFieldById(fieldId: string, guildId: string): Promise<Field | null> {
+export async function getFieldById(fieldId: string, guildId: string): Promise<Status<Field>> {
 	try {
 		const field = await container.prisma.field.findUnique({
 			where: {
@@ -32,14 +34,27 @@ export async function getFieldById(fieldId: string, guildId: string): Promise<Fi
 				}
 			}
 		});
-		return field;
+
+		if (!field)
+			return {
+				status: StatusCode.NOT_FOUND,
+				message: 'Field not found'
+			};
+
+		return {
+			status: StatusCode.SUCCESS,
+			data: field
+		};
 	} catch (error) {
 		container.logger.error(error);
-		return null;
+		return {
+			status: StatusCode.ERROR,
+			message: 'Something went wrong'
+		};
 	}
 }
 
-export async function getFieldByName(fieldName: string, guildId: string): Promise<Field | null> {
+export async function getFieldByName(fieldName: string, guildId: string): Promise<Status<Field>> {
 	try {
 		const field = await container.prisma.field.findFirst({
 			where: {
@@ -49,10 +64,23 @@ export async function getFieldByName(fieldName: string, guildId: string): Promis
 				}
 			}
 		});
-		return field;
+
+		if (!field)
+			return {
+				status: StatusCode.NOT_FOUND,
+				message: 'Field not found'
+			};
+
+		return {
+			status: StatusCode.SUCCESS,
+			data: field
+		};
 	} catch (error) {
 		container.logger.error(error);
-		return null;
+		return {
+			status: StatusCode.ERROR,
+			message: 'Something went wrong'
+		};
 	}
 }
 
@@ -60,7 +88,7 @@ export async function createField(
 	fieldName: string,
 	guildId: string,
 	data: Omit<Prisma.FieldCreateInput, 'nameField' | 'guildId' | 'guild'>
-): Promise<Field | null> {
+): Promise<Status<Field>> {
 	try {
 		const field = await container.prisma.field.create({
 			data: {
@@ -73,14 +101,21 @@ export async function createField(
 				}
 			}
 		});
-		return field;
+
+		return {
+			status: StatusCode.SUCCESS,
+			data: field
+		};
 	} catch (error) {
 		container.logger.error(error);
-		return null;
+		return {
+			status: StatusCode.ERROR,
+			message: 'Something went wrong'
+		};
 	}
 }
 
-export async function updateField(fieldId: string, data: Omit<Field, 'id' | 'guildId'>): Promise<Field | null> {
+export async function updateField(fieldId: string, data: Omit<Field, 'id' | 'guildId'>): Promise<Status<Field>> {
 	try {
 		const field = await container.prisma.field.update({
 			where: {
@@ -88,21 +123,37 @@ export async function updateField(fieldId: string, data: Omit<Field, 'id' | 'gui
 			},
 			data
 		});
-		return field;
+
+		return {
+			status: StatusCode.SUCCESS,
+			data: field
+		};
 	} catch (error) {
 		container.logger.error(error);
-		return null;
+		return {
+			status: StatusCode.ERROR,
+			message: 'Something went wrong'
+		};
 	}
 }
 
-export async function removeField(fieldId: string) {
+export async function removeField(fieldId: string): Promise<Status<boolean>> {
 	try {
 		await container.prisma.field.delete({
 			where: {
 				id: fieldId
 			}
 		});
+
+		return {
+			status: StatusCode.SUCCESS,
+			message: 'Successfully removed field'
+		};
 	} catch (error) {
 		container.logger.error(error);
+		return {
+			status: StatusCode.ERROR,
+			message: 'Something went wrong'
+		};
 	}
 }

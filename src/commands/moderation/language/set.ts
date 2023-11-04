@@ -1,6 +1,6 @@
 import { KaeCommand } from '../../../lib/structures/commands/KaeCommand';
 import KaeEmbed from '../../../lib/structures/embeds/KaeEmbed';
-import { Language } from '../../../lib/types/enum';
+import { Language, StatusCode } from '../../../lib/types/enum';
 import { mapEnumToChoices } from '../../../lib/utils';
 import { editGuildLanguage, getGuild } from '../../../lib/utils/guild';
 
@@ -31,19 +31,19 @@ export class SetCommand extends KaeCommand {
 
 		const guild = await getGuild(interaction.guild!.id);
 
-		if (!guild) {
+		if (guild.status !== StatusCode.SUCCESS) {
 			return interaction.editReply({
-				embeds: [new KaeEmbed().setTitle('Something went wrong').setDescription('The guild was not found')]
+				embeds: [new KaeEmbed().setTitle('Something went wrong').setDescription(guild.message)]
 			});
 		}
 
 		const language = interaction.options.getString('language', false) as Language;
 
-		const isSuccess = await editGuildLanguage(interaction.guild!.id, language);
+		const guildLanguage = await editGuildLanguage(interaction.guild!.id, language);
 
-		if (!isSuccess) {
+		if (guildLanguage.status !== StatusCode.SUCCESS) {
 			return interaction.editReply({
-				embeds: [new KaeEmbed().setTitle('Something went wrong').setDescription('The language was not changed')]
+				embeds: [new KaeEmbed().setTitle('Something went wrong').setDescription(guildLanguage.message)]
 			});
 		}
 

@@ -1,4 +1,5 @@
 import { KaeCommand } from '../../../lib/structures/commands/KaeCommand';
+import { StatusCode } from '../../../lib/types/enum';
 import { createField, getFieldByName } from '../../../lib/utils/field';
 
 export class CreateCommand extends KaeCommand {
@@ -30,7 +31,7 @@ export class CreateCommand extends KaeCommand {
 
 		const fieldData = await getFieldByName(fieldName, interaction.guildId!);
 
-		if (fieldData) return interaction.editReply('Field already exists');
+		if (fieldData.status === StatusCode.SUCCESS && fieldData.data) return interaction.editReply('Field already exists');
 
 		const field = await createField(fieldName, interaction.guildId!, {
 			name,
@@ -38,7 +39,7 @@ export class CreateCommand extends KaeCommand {
 			inline
 		});
 
-		if (!field) return interaction.editReply('Failed to create field');
+		if (field.status !== StatusCode.SUCCESS) return interaction.editReply(field.message);
 
 		return interaction.editReply({ content: 'Field successfully created' });
 	}

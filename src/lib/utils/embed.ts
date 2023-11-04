@@ -4,6 +4,8 @@ import { APIEmbed, ColorResolvable, EmbedField, GuildMember } from 'discord.js';
 import { KaeCommand } from '../structures/commands/KaeCommand';
 import KaeEmbed from '../structures/embeds/KaeEmbed';
 import { formatText } from './function';
+import { StatusCode } from '../types/enum';
+import { Status } from '../types/types';
 
 export async function getEmbedsByGuildId(guildId: string): Promise<{ id: string; name: string }[]> {
 	try {
@@ -49,7 +51,7 @@ export async function getFieldsOnEmbedByName(embedName: string): Promise<{ name:
 	}
 }
 
-export async function getEmbedById(embedId: string, guildId: string): Promise<Prisma.EmbedGetPayload<{ include: { fields: true } }> | null> {
+export async function getEmbedById(embedId: string, guildId: string): Promise<Status<Prisma.EmbedGetPayload<{ include: { fields: true } }>>> {
 	try {
 		const embed = await container.prisma.embed.findUnique({
 			where: {
@@ -62,14 +64,28 @@ export async function getEmbedById(embedId: string, guildId: string): Promise<Pr
 				fields: true
 			}
 		});
-		return embed;
+
+		if (!embed) {
+			return {
+				status: StatusCode.NOT_FOUND,
+				message: 'Embed not found'
+			};
+		}
+
+		return {
+			status: StatusCode.SUCCESS,
+			data: embed
+		};
 	} catch (error) {
 		container.logger.error(error);
-		return null;
+		return {
+			status: StatusCode.ERROR,
+			message: 'Something went wrong'
+		};
 	}
 }
 
-export async function getEmbedByName(embedName: string, guildId: string): Promise<Embed | null> {
+export async function getEmbedByName(embedName: string, guildId: string): Promise<Status<Embed>> {
 	try {
 		const embed = await container.prisma.embed.findFirst({
 			where: {
@@ -79,14 +95,28 @@ export async function getEmbedByName(embedName: string, guildId: string): Promis
 				}
 			}
 		});
-		return embed;
+
+		if (!embed) {
+			return {
+				status: StatusCode.NOT_FOUND,
+				message: 'Embed not found'
+			};
+		}
+
+		return {
+			status: StatusCode.SUCCESS,
+			data: embed
+		};
 	} catch (error) {
 		container.logger.error(error);
-		return null;
+		return {
+			status: StatusCode.ERROR,
+			message: 'Something went wrong'
+		};
 	}
 }
 
-export async function createEmbed(embedName: string, guildId: string): Promise<Embed | null> {
+export async function createEmbed(embedName: string, guildId: string): Promise<Status<Embed>> {
 	try {
 		const embed = await container.prisma.embed.create({
 			data: {
@@ -98,14 +128,21 @@ export async function createEmbed(embedName: string, guildId: string): Promise<E
 				}
 			}
 		});
-		return embed;
+
+		return {
+			status: StatusCode.SUCCESS,
+			data: embed
+		};
 	} catch (error) {
 		container.logger.error(error);
-		return null;
+		return {
+			status: StatusCode.ERROR,
+			message: 'Something went wrong'
+		};
 	}
 }
 
-export async function updateEmbed(embedId: string, data: Omit<Embed, 'id' | 'guildId'>): Promise<Embed | null> {
+export async function updateEmbed(embedId: string, data: Omit<Embed, 'id' | 'guildId'>): Promise<Status<Embed>> {
 	try {
 		const embed = await container.prisma.embed.update({
 			where: {
@@ -113,87 +150,94 @@ export async function updateEmbed(embedId: string, data: Omit<Embed, 'id' | 'gui
 			},
 			data
 		});
-		return embed;
+
+		return {
+			status: StatusCode.SUCCESS,
+			data: embed
+		};
 	} catch (error) {
 		container.logger.error(error);
-		return null;
+		return {
+			status: StatusCode.ERROR,
+			message: 'Something went wrong'
+		};
 	}
 }
 
-export async function generateEmbed(embedId: string, interaction: KaeCommand.ChatInputCommandInteraction | GuildMember): Promise<APIEmbed | null> {
+export async function generateEmbed(embedId: string, interaction: KaeCommand.ChatInputCommandInteraction | GuildMember): Promise<Status<APIEmbed>> {
 	const embedData = await getEmbedById(embedId, interaction.guild!.id!);
 
-	if (!embedData) return null;
+	if (embedData.status !== StatusCode.SUCCESS) return embedData;
 
 	const embed = new KaeEmbed();
 
-	if (embedData.title) embed.setTitle(formatText(embedData.title, interaction));
+	if (embedData.data!.title) embed.setTitle(formatText(embedData.data!.title, interaction));
 
-	if (embedData.url) embed.setURL(embedData.url);
+	if (embedData.data!.url) embed.setURL(embedData.data!.url);
 
-	if (embedData.author || embedData.authorIconURL || embedData.authorURL) {
-		var authorIcon = embedData.authorIconURL as string;
+	if (embedData.data!.author || embedData.data!.authorIconURL || embedData.data!.authorURL) {
+		var authorIcon = embedData.data!.authorIconURL as string;
 
-		if (embedData.authorIconURL && embedData.authorIconURL === 'user_avatar') {
+		if (embedData.data!.authorIconURL && embedData.data!.authorIconURL === 'user_avatar') {
 			authorIcon = interaction.user.displayAvatarURL();
 		}
 
-		if (embedData.author && embedData.authorIconURL && embedData.authorURL) {
+		if (embedData.data!.author && embedData.data!.authorIconURL && embedData.data!.authorURL) {
 			embed.setAuthor({
-				name: formatText(embedData.author as string, interaction),
+				name: formatText(embedData.data!.author as string, interaction),
 				iconURL: authorIcon,
-				url: embedData.authorURL as string
+				url: embedData.data!.authorURL as string
 			});
 		}
 
-		if (embedData.author && !embedData.authorIconURL && !embedData.authorURL) {
+		if (embedData.data!.author && !embedData.data!.authorIconURL && !embedData.data!.authorURL) {
 			embed.setAuthor({
-				name: formatText(embedData.author as string, interaction)
+				name: formatText(embedData.data!.author as string, interaction)
 			});
 		}
 
-		if (embedData.author && embedData.authorIconURL && !embedData.authorURL) {
+		if (embedData.data!.author && embedData.data!.authorIconURL && !embedData.data!.authorURL) {
 			embed.setAuthor({
-				name: formatText(embedData.author as string, interaction),
+				name: formatText(embedData.data!.author as string, interaction),
 				iconURL: authorIcon
 			});
 		}
 
-		if (embedData.author && !embedData.authorIconURL && embedData.authorURL) {
+		if (embedData.data!.author && !embedData.data!.authorIconURL && embedData.data!.authorURL) {
 			embed.setAuthor({
-				name: formatText(embedData.author as string, interaction),
-				url: embedData.authorURL as string
+				name: formatText(embedData.data!.author as string, interaction),
+				url: embedData.data!.authorURL as string
 			});
 		}
 	}
 
-	embed.setDescription(embedData.description ? formatText(embedData.description, interaction) : 'Not setting up');
+	embed.setDescription(embedData.data!.description ? formatText(embedData.data!.description, interaction) : 'Not setting up');
 
-	if (embedData.color) embed.setColor(embedData.color as ColorResolvable);
+	if (embedData.data!.color) embed.setColor(embedData.data!.color as ColorResolvable);
 
-	if (embedData.footer || embedData.footerIconURL) {
-		if (embedData.footer && embedData.footerIconURL) {
+	if (embedData.data!.footer || embedData.data!.footerIconURL) {
+		if (embedData.data!.footer && embedData.data!.footerIconURL) {
 			embed.setFooter({
-				text: formatText(embedData.footer, interaction),
-				iconURL: embedData.footerIconURL
+				text: formatText(embedData.data!.footer, interaction),
+				iconURL: embedData.data!.footerIconURL
 			});
 		}
 
-		if (embedData.footer && !embedData.footerIconURL) {
+		if (embedData.data!.footer && !embedData.data!.footerIconURL) {
 			embed.setFooter({
-				text: formatText(embedData.footer, interaction)
+				text: formatText(embedData.data!.footer, interaction)
 			});
 		}
 	}
 
-	if (embedData.thumbnail) embed.setThumbnail(embedData.thumbnail);
+	if (embedData.data!.thumbnail) embed.setThumbnail(embedData.data!.thumbnail);
 
-	if (embedData.image) embed.setImage(embedData.image);
+	if (embedData.data!.image) embed.setImage(embedData.data!.image);
 
-	if (embedData.timestamp) embed.setTimestamp(new Date());
+	if (embedData.data!.timestamp) embed.setTimestamp(new Date());
 
 	let fields: EmbedField[] = [];
-	for (const field of embedData.fields) {
+	for (const field of embedData.data!.fields) {
 		fields.push({
 			name: formatText(field.name as string, interaction),
 			value: formatText(field.value as string, interaction),
@@ -203,22 +247,33 @@ export async function generateEmbed(embedId: string, interaction: KaeCommand.Cha
 
 	if (fields.length > 0) embed.addFields(fields);
 
-	return embed.toJSON();
+	return {
+		status: StatusCode.SUCCESS,
+		data: embed.toJSON()
+	};
 }
 
-export async function removeEmbed(embedId: string) {
+export async function removeEmbed(embedId: string): Promise<Status> {
 	try {
 		await container.prisma.embed.delete({
 			where: {
 				id: embedId
 			}
 		});
+
+		return {
+			status: StatusCode.SUCCESS
+		};
 	} catch (error) {
 		container.logger.error(error);
+		return {
+			status: StatusCode.ERROR,
+			message: 'Something went wrong'
+		};
 	}
 }
 
-export async function addField(embedId: string, fieldId: string) {
+export async function addField(embedId: string, fieldId: string): Promise<Status> {
 	try {
 		await container.prisma.embed.update({
 			where: {
@@ -232,12 +287,20 @@ export async function addField(embedId: string, fieldId: string) {
 				}
 			}
 		});
+
+		return {
+			status: StatusCode.SUCCESS
+		};
 	} catch (error) {
 		container.logger.error(error);
+		return {
+			status: StatusCode.ERROR,
+			message: 'Something went wrong'
+		};
 	}
 }
 
-export async function removeField(embedId: string, fieldId: string) {
+export async function removeField(embedId: string, fieldId: string): Promise<Status> {
 	try {
 		await container.prisma.embed.update({
 			where: {
@@ -251,7 +314,15 @@ export async function removeField(embedId: string, fieldId: string) {
 				}
 			}
 		});
+
+		return {
+			status: StatusCode.SUCCESS
+		};
 	} catch (error) {
 		container.logger.error(error);
+		return {
+			status: StatusCode.ERROR,
+			message: 'Something went wrong'
+		};
 	}
 }

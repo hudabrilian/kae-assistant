@@ -1,4 +1,5 @@
 import { KaeCommand } from '../../../lib/structures/commands/KaeCommand';
+import { StatusCode } from '../../../lib/types/enum';
 import { getEmbedByName, removeEmbed } from '../../../lib/utils/embed';
 
 export class RemoveCommand extends KaeCommand {
@@ -24,9 +25,9 @@ export class RemoveCommand extends KaeCommand {
 
 		const embedData = await getEmbedByName(embedName, interaction.guildId!);
 
-		if (!embedData) return interaction.editReply('Embed is not exists');
+		if (embedData.status !== StatusCode.SUCCESS) return interaction.editReply(embedData.message);
 
-		await removeEmbed(embedData.id);
+		await removeEmbed(embedData.data!.id);
 
 		return interaction.editReply({ content: 'Embed successfully removed' });
 	}
