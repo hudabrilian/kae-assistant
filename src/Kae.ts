@@ -8,6 +8,9 @@ const client = new KaeClient();
 const main = async () => {
 	try {
 		client.logger.info('Logging in');
+
+		await container.player.extractors.loadDefault();
+
 		await client.login();
 		client.logger.info('logged in');
 	} catch (error) {

@@ -3,6 +3,7 @@ import { SapphireClient, container } from '@sapphire/framework';
 import { CLIENT_OPTIONS } from '../config';
 import prismaClient from './database';
 import { KaeLevel } from './structures/KaeLevel';
+import { Player } from 'discord-player';
 
 export default class KaeClient extends SapphireClient {
 	@Enumerable(false)
@@ -13,6 +14,9 @@ export default class KaeClient extends SapphireClient {
 
 		container.prisma = prismaClient;
 		container.level = new KaeLevel();
+		container.player = new Player(this, {
+			skipFFmpeg: true
+		});
 	}
 
 	public override async login(token?: string) {

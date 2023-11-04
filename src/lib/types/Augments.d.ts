@@ -1,17 +1,22 @@
 import { PrismaClient } from '@prisma/client';
 import { ArrayString } from '@skyra/env-utilities';
 import { KaeLevel } from '../structures/KaeLevel';
+import { Player } from 'discord-player';
 
 declare module '@sapphire/pieces' {
 	interface Container {
 		prisma: PrismaClient;
 		level: KaeLevel;
+		player: Player;
 	}
 }
 
 declare module '@sapphire/framework' {
 	interface Preconditions {
 		BotOwner: never;
+		UserInVoice: never;
+		InSameVoice: never;
+		BotInVoice: never;
 	}
 }
 
