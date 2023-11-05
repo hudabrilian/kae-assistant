@@ -40,7 +40,7 @@ export const CLIENT_OPTIONS: ClientOptions = {
 	presence: {
 		activities: [
 			{
-				name: 'k.',
+				name: 'kae command',
 				type: ActivityType.Watching
 			}
 		]
