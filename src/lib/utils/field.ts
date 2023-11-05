@@ -1,7 +1,7 @@
+import { StatusCode } from '#lib/types/enum';
+import { Status } from '#lib/types/types';
 import { Field, Prisma } from '@prisma/client';
 import { container } from '@sapphire/framework';
-import { StatusCode } from '../types/enum';
-import { Status } from '../types/types';
 
 export async function getFieldByGuildId(guildId: string): Promise<{ name: string }[]> {
 	try {

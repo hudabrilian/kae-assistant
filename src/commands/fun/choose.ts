@@ -1,6 +1,6 @@
+import { KaeCommand } from '#lib/structures/commands/KaeCommand';
+import KaeEmbed from '#lib/structures/embeds/KaeEmbed';
 import { ApplyOptions } from '@sapphire/decorators';
-import { KaeCommand } from '../../lib/structures/commands/KaeCommand';
-import KaeEmbed from '../../lib/structures/embeds/KaeEmbed';
 
 @ApplyOptions<KaeCommand.Options>({
 	description: 'Select randomly from the list'

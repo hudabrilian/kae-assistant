@@ -1,5 +1,5 @@
+import { DEV } from '#config';
 import { PrismaClient } from '@prisma/client';
-import { DEV } from '../../config';
 
 declare global {
 	var prisma: PrismaClient | undefined;

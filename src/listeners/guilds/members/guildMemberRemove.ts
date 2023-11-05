@@ -1,9 +1,9 @@
+import { StatusCode } from '#lib/types/enum';
+import { generateEmbed } from '#lib/utils/embed';
+import { getGreetingsByGuildId } from '#lib/utils/greeting';
 import { ApplyOptions } from '@sapphire/decorators';
 import { Events, Listener } from '@sapphire/framework';
 import { GuildMember } from 'discord.js';
-import { generateEmbed } from '../../../lib/utils/embed';
-import { getGreetingsByGuildId } from '../../../lib/utils/greeting';
-import { StatusCode } from '../../../lib/types/enum';
 
 @ApplyOptions<Listener.Options>({
 	event: Events.GuildMemberRemove

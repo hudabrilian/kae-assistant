@@ -1,8 +1,8 @@
 import { ApplyOptions } from '@sapphire/decorators';
 import { PermissionFlagsBits } from 'discord.js';
-import { KaeCommand } from '../../lib/structures/commands/KaeCommand';
-import KaeEmbed from '../../lib/structures/embeds/KaeEmbed';
 import { JoinCommand } from './join';
+import { KaeCommand } from '#structures/commands/KaeCommand';
+import KaeEmbed from '#structures/embeds/KaeEmbed';
 
 @ApplyOptions<KaeCommand.Options>({
 	description: 'Play a song',

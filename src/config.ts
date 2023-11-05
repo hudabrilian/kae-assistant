@@ -1,11 +1,11 @@
-import { envParseArray, envParseString, setup } from '@skyra/env-utilities';
-import { join } from 'path';
-import { rootFolder } from './lib/utils/constants';
-import { ActivityType, ClientOptions, GatewayIntentBits, Options, Partials } from 'discord.js';
+import prismaClient from '#database';
+import { Language } from '#lib/types/enum';
+import { rootFolder } from '#lib/utils/constants';
 import { LogLevel } from '@sapphire/framework';
 import { InternationalizationContext } from '@sapphire/plugin-i18next';
-import prismaClient from './lib/database';
-import { Language } from './lib/types/enum';
+import { envParseArray, envParseString, setup } from '@skyra/env-utilities';
+import { ActivityType, ClientOptions, GatewayIntentBits, Options, Partials } from 'discord.js';
+import { join } from 'path';
 
 setup({ path: join(rootFolder, '.env') });
 

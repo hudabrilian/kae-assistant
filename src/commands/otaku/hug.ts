@@ -1,9 +1,9 @@
+import { KaeCommand } from '#structures/commands/KaeCommand';
+import KaeEmbed from '#structures/embeds/KaeEmbed';
+import { StatusCode } from '#types/enum';
+import { getImage } from '#utils/otaku';
 import { ApplyOptions } from '@sapphire/decorators';
-import { KaeCommand } from '../../lib/structures/commands/KaeCommand';
 import { ApplicationCommandType, userMention } from 'discord.js';
-import { getImage } from '../../lib/utils/otaku';
-import KaeEmbed from '../../lib/structures/embeds/KaeEmbed';
-import { StatusCode } from '../../lib/types/enum';
 
 @ApplyOptions<KaeCommand.Options>({
 	name: 'hug',

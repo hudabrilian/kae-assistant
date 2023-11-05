@@ -1,8 +1,8 @@
+import { getEmbedsByGuildId, getFieldsOnEmbedByName } from '#lib/utils/embed';
+import { getFieldByGuildId } from '#lib/utils/field';
 import { ApplyOptions } from '@sapphire/decorators';
 import { InteractionHandler, InteractionHandlerTypes } from '@sapphire/framework';
 import { AutocompleteInteraction, type ApplicationCommandOptionChoiceData } from 'discord.js';
-import { getEmbedsByGuildId, getFieldsOnEmbedByName } from '../../lib/utils/embed';
-import { getFieldByGuildId } from '../../lib/utils/field';
 
 @ApplyOptions<InteractionHandler.Options>({
 	interactionHandlerType: InteractionHandlerTypes.Autocomplete

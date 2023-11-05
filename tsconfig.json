@@ -3,12 +3,21 @@
 	"compilerOptions": {
 		"sourceMap": true,
 		"rootDir": "src",
+		"baseUrl": "src",
 		"outDir": "dist",
 		"strict": true,
 		"tsBuildInfoFile": "dist/.tsbuildinfo",
 		"esModuleInterop": true,
 		"skipLibCheck": true,
-		"resolveJsonModule": true
+		"resolveJsonModule": true,
+		"paths": {
+			"#config": ["config.ts"],
+			"#database": ["lib/prismaClient.ts"],
+			"#lib/*": ["lib/*"],
+			"#types/*": ["lib/types/*"],
+			"#utils/*": ["lib/utils/*"],
+			"#structures/*": ["lib/structures/*"]
+		}
 	},
 	"include": ["src", "src/languages/**/*.json"]
 }

@@ -1,8 +1,8 @@
-import { Subcommand } from '@kaname-png/plugin-subcommands-advanced';
+import { KaeSubcommand } from '#structures/commands/KaeCommand';
 import { ApplicationCommandRegistry } from '@sapphire/framework';
 
-export class ParentCommand extends Subcommand {
-	public constructor(context: Subcommand.Context, options: Subcommand.Options) {
+export class ParentCommand extends KaeSubcommand {
+	public constructor(context: KaeSubcommand.Context, options: KaeSubcommand.Options) {
 		super(context, {
 			...options,
 			name: 'test',

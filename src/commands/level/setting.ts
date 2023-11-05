@@ -1,6 +1,6 @@
-import { KaeCommand } from '../../lib/structures/commands/KaeCommand';
-import KaeEmbed from '../../lib/structures/embeds/KaeEmbed';
-import { StatusCode } from '../../lib/types/enum';
+import { KaeCommand } from '#lib/structures/commands/KaeCommand';
+import KaeEmbed from '#lib/structures/embeds/KaeEmbed';
+import { StatusCode } from '#lib/types/enum';
 
 export class LevelCommand extends KaeCommand {
 	public constructor(context: KaeCommand.Context, options: KaeCommand.Options) {

@@ -1,5 +1,5 @@
+import { KaeSubcommand } from '#lib/structures/commands/KaeCommand';
 import { ApplicationCommandRegistry } from '@sapphire/framework';
-import { KaeSubcommand } from '../../../lib/structures/commands/KaeCommand';
 
 export class ParentCommand extends KaeSubcommand {
 	public constructor(context: KaeSubcommand.Context, options: KaeSubcommand.Options) {

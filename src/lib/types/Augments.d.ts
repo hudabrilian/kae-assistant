@@ -1,6 +1,6 @@
+import { KaeLevel } from '#lib/structures/KaeLevel';
 import { PrismaClient } from '@prisma/client';
 import { ArrayString } from '@skyra/env-utilities';
-import { KaeLevel } from '../structures/KaeLevel';
 import { Player } from 'discord-player';
 
 declare module '@sapphire/pieces' {

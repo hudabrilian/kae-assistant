@@ -1,8 +1,8 @@
+import { otakuApiResult } from '#lib/types';
+import { StatusCode } from '#lib/types/enum';
+import { Status } from '#lib/types/types';
 import { FetchResultTypes, fetch } from '@sapphire/fetch';
-import { otakuApiResult } from '../types';
 import { container } from '@sapphire/framework';
-import { StatusCode } from '../types/enum';
-import { Status } from '../types/types';
 
 export async function getImage(reaction: string): Promise<Status<{ url: string }>> {
 	try {

@@ -1,6 +1,6 @@
+import { KaeCommand } from '#structures/commands/KaeCommand';
 import { ApplyOptions } from '@sapphire/decorators';
 import { ApplicationCommandType, Message } from 'discord.js';
-import { KaeCommand } from '../lib/structures/commands/KaeCommand';
 
 @ApplyOptions<KaeCommand.Options>({
 	description: 'ping pong'

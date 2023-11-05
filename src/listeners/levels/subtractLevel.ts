@@ -1,7 +1,7 @@
 import { ApplyOptions } from '@sapphire/decorators';
 import { Listener } from '@sapphire/framework';
-import { LevelEvents } from '../../lib/types/enum';
 import { UserLevel } from '@prisma/client';
+import { LevelEvents } from '#lib/types/enum';
 
 @ApplyOptions<Listener.Options>({
 	event: LevelEvents.SUBTRACT_LEVEL

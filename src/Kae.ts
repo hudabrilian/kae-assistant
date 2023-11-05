@@ -1,7 +1,7 @@
-import './lib/setup';
+import KaeClient from '#lib/KaeClient';
+import '#lib/setup';
 
 import { container } from '@sapphire/framework';
-import KaeClient from './lib/KaeClient';
 
 const client = new KaeClient();
 

@@ -1,7 +1,7 @@
+import { KaeCommand } from '#structures/commands/KaeCommand';
+import KaeEmbed from '#structures/embeds/KaeEmbed';
 import { ApplyOptions } from '@sapphire/decorators';
 import { useMainPlayer } from 'discord-player';
-import { KaeCommand } from '../../lib/structures/commands/KaeCommand';
-import KaeEmbed from '../../lib/structures/embeds/KaeEmbed';
 
 @ApplyOptions<KaeCommand.Options>({
 	description: 'show the current queue',

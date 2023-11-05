@@ -1,9 +1,9 @@
+import KaeEmbed from '#lib/structures/embeds/KaeEmbed';
+import { StatusCode } from '#lib/types/enum';
+import { getReactionRoleByEmojiId } from '#lib/utils/role';
 import { ApplyOptions } from '@sapphire/decorators';
 import { Events, Listener } from '@sapphire/framework';
 import { MessageReaction, User, userMention } from 'discord.js';
-import { StatusCode } from '../../lib/types/enum';
-import { getReactionRoleByEmojiId } from '../../lib/utils/role';
-import KaeEmbed from '../../lib/structures/embeds/KaeEmbed';
 
 @ApplyOptions<Listener.Options>({
 	event: Events.MessageReactionAdd

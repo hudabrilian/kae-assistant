@@ -1,3 +1,8 @@
+import { KaeCommand } from '#structures/commands/KaeCommand';
+import { StatusCode } from '#types/enum';
+import { generateEmbed } from '#utils/embed';
+import { getGuild } from '#utils/guild';
+import { setVerify } from '#utils/verify';
 import {
 	ActionRowBuilder,
 	ButtonBuilder,
@@ -7,11 +12,6 @@ import {
 	MessageCreateOptions,
 	TextBasedChannel
 } from 'discord.js';
-import { KaeCommand } from '../../../lib/structures/commands/KaeCommand';
-import { generateEmbed } from '../../../lib/utils/embed';
-import { setVerify } from '../../../lib/utils/verify';
-import { getGuild } from '../../../lib/utils/guild';
-import { StatusCode } from '../../../lib/types/enum';
 
 export class SetCommand extends KaeCommand {
 	public constructor(context: KaeCommand.Context, options: KaeCommand.Options) {

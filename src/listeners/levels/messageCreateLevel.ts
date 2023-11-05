@@ -1,7 +1,7 @@
+import { StatusCode, LevelEvents } from '#lib/types/enum';
 import { ApplyOptions } from '@sapphire/decorators';
 import { Events, Listener } from '@sapphire/framework';
 import { Message } from 'discord.js';
-import { LevelEvents, StatusCode } from '../../lib/types/enum';
 
 @ApplyOptions<Listener.Options>({
 	event: Events.MessageCreate,

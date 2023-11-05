@@ -1,5 +1,5 @@
+import { KaeCommand } from '#structures/commands/KaeCommand';
 import { APIApplicationCommandOptionChoice } from 'discord.js';
-import { KaeCommand } from '../../lib/structures/commands/KaeCommand';
 
 const testingEvents: APIApplicationCommandOptionChoice<string>[] = [
 	{

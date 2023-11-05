@@ -1,8 +1,8 @@
+import { StatusCode } from '#lib/types/enum';
+import { getVerifyByGuildId } from '#lib/utils/verify';
 import { ApplyOptions } from '@sapphire/decorators';
 import { InteractionHandler, InteractionHandlerTypes } from '@sapphire/framework';
 import { ButtonInteraction, GuildMember } from 'discord.js';
-import { getVerifyByGuildId } from '../../lib/utils/verify';
-import { StatusCode } from '../../lib/types/enum';
 
 @ApplyOptions<InteractionHandler.Options>({
 	interactionHandlerType: InteractionHandlerTypes.Button,

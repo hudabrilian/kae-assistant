@@ -1,9 +1,9 @@
+import KaeEmbed from '#lib/structures/embeds/KaeEmbed';
+import { StatusCode } from '#lib/types/enum';
+import { Status } from '#lib/types/types';
 import { Prisma } from '@prisma/client';
 import { container } from '@sapphire/framework';
 import { APIEmbed, channelMention } from 'discord.js';
-import KaeEmbed from '../structures/embeds/KaeEmbed';
-import { StatusCode } from '../types/enum';
-import { Status } from '../types/types';
 
 export async function generateEmbed({
 	welcomeChannel,

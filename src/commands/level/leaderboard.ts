@@ -1,7 +1,7 @@
+import { KaeCommand } from '#lib/structures/commands/KaeCommand';
+import KaeEmbed from '#lib/structures/embeds/KaeEmbed';
+import { StatusCode } from '#lib/types/enum';
 import { ApplyOptions } from '@sapphire/decorators';
-import { KaeCommand } from '../../lib/structures/commands/KaeCommand';
-import KaeEmbed from '../../lib/structures/embeds/KaeEmbed';
-import { StatusCode } from '../../lib/types/enum';
 
 @ApplyOptions<KaeCommand.Options>({
 	description: 'Leaderboard level in this guild'

@@ -1,7 +1,7 @@
+import { KaeCommand } from '#lib/structures/commands/KaeCommand';
+import { StatusCode } from '#lib/types/enum';
+import { addLevelRole } from '#lib/utils/levelRole';
 import { roleMention } from 'discord.js';
-import { KaeCommand } from '../../../lib/structures/commands/KaeCommand';
-import { addLevelRole } from '../../../lib/utils/levelRole';
-import { StatusCode } from '../../../lib/types/enum';
 
 export class AddRoleLevelCommand extends KaeCommand {
 	public constructor(context: KaeCommand.Context, options: KaeCommand.Options) {

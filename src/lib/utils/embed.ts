@@ -1,11 +1,11 @@
+import { KaeCommand } from '#lib/structures/commands/KaeCommand';
+import KaeEmbed from '#lib/structures/embeds/KaeEmbed';
+import { StatusCode } from '#lib/types/enum';
+import { Status } from '#lib/types/types';
 import { Embed, Prisma } from '@prisma/client';
 import { container } from '@sapphire/framework';
 import { APIEmbed, ColorResolvable, EmbedField, GuildMember } from 'discord.js';
-import { KaeCommand } from '../structures/commands/KaeCommand';
-import KaeEmbed from '../structures/embeds/KaeEmbed';
 import { formatText } from './function';
-import { StatusCode } from '../types/enum';
-import { Status } from '../types/types';
 
 export async function getEmbedsByGuildId(guildId: string): Promise<{ id: string; name: string }[]> {
 	try {

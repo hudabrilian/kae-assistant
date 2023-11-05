@@ -1,8 +1,8 @@
+import { KaeCommand } from '#structures/commands/KaeCommand';
+import KaeEmbed from '#structures/embeds/KaeEmbed';
+import { StatusCode } from '#types/enum';
+import { getReactionRoles } from '#utils/role';
 import { formatEmoji, roleMention } from 'discord.js';
-import { KaeCommand } from '../../../../lib/structures/commands/KaeCommand';
-import KaeEmbed from '../../../../lib/structures/embeds/KaeEmbed';
-import { StatusCode } from '../../../../lib/types/enum';
-import { getReactionRoles } from '../../../../lib/utils/role';
 
 export class ListReactionRoleCommand extends KaeCommand {
 	public constructor(context: KaeCommand.Context, options: KaeCommand.Options) {

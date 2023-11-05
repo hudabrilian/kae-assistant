@@ -1,7 +1,7 @@
 import { container } from '@sapphire/framework';
-import { Status } from '../types/types';
 import { ReactionRole } from '@prisma/client';
-import { StatusCode } from '../types/enum';
+import { Status } from '#lib/types/types';
+import { StatusCode } from '#lib/types/enum';
 
 export async function addReactionRole(roleId: string, emojiId: string, guildId: string, message: string): Promise<Status<ReactionRole>> {
 	try {

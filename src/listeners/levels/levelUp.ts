@@ -1,9 +1,9 @@
+import { LevelEvents, StatusCode } from '#lib/types/enum';
+import { getLevelRoleByLevel } from '#lib/utils/levelRole';
 import { UserLevel } from '@prisma/client';
 import { ApplyOptions } from '@sapphire/decorators';
 import { Listener } from '@sapphire/framework';
 import { GuildMember, Message, roleMention } from 'discord.js';
-import { LevelEvents, StatusCode } from '../../lib/types/enum';
-import { getLevelRoleByLevel } from '../../lib/utils/levelRole';
 
 @ApplyOptions<Listener.Options>({
 	event: LevelEvents.LEVEL_UP

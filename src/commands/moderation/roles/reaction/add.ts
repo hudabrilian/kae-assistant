@@ -1,9 +1,9 @@
+import { KaeCommand } from '#structures/commands/KaeCommand';
+import { StatusCode } from '#types/enum';
+import { generateEmbed } from '#utils/embed';
+import { getGuild } from '#utils/guild';
+import { getReactionRole, addReactionRole } from '#utils/role';
 import { ChannelType, TextBasedChannel, parseEmoji } from 'discord.js';
-import { KaeCommand } from '../../../../lib/structures/commands/KaeCommand';
-import { StatusCode } from '../../../../lib/types/enum';
-import { generateEmbed } from '../../../../lib/utils/embed';
-import { getGuild } from '../../../../lib/utils/guild';
-import { addReactionRole, getReactionRole } from '../../../../lib/utils/role';
 
 export class AddReactionRoleCommand extends KaeCommand {
 	public constructor(context: KaeCommand.Context, options: KaeCommand.Options) {

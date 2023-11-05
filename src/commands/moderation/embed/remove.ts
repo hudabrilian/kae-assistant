@@ -1,6 +1,6 @@
-import { KaeCommand } from '../../../lib/structures/commands/KaeCommand';
-import { StatusCode } from '../../../lib/types/enum';
-import { getEmbedByName, removeEmbed } from '../../../lib/utils/embed';
+import { KaeCommand } from '#lib/structures/commands/KaeCommand';
+import { StatusCode } from '#lib/types/enum';
+import { getEmbedByName, removeEmbed } from '#lib/utils/embed';
 
 export class RemoveCommand extends KaeCommand {
 	public constructor(context: KaeCommand.Context, options: KaeCommand.Options) {

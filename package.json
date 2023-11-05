@@ -49,5 +49,13 @@
 		"watch:start": "tsc-watch --onSuccess \"npm run start\"",
 		"format": "prettier --write \"src/\""
 	},
-	"prettier": "@sapphire/prettier-config"
+	"prettier": "@sapphire/prettier-config",
+	"imports": {
+		"#config": "./dist/config.js",
+		"#database": "./dist/lib/prismaClient.js",
+		"#lib/*": "./dist/lib/*.js",
+		"#types/*": "./dist/lib/types/*.js",
+		"#utils/*": "./dist/lib/utils/*.js",
+		"#structures/*": "./dist/lib/structures/*.js"
+	}
 }

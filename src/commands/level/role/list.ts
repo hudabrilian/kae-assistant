@@ -1,8 +1,8 @@
+import { KaeCommand } from '#lib/structures/commands/KaeCommand';
+import KaeEmbed from '#lib/structures/embeds/KaeEmbed';
+import { StatusCode } from '#lib/types/enum';
+import { getLevelRoles } from '#lib/utils/levelRole';
 import { roleMention } from 'discord.js';
-import { KaeCommand } from '../../../lib/structures/commands/KaeCommand';
-import KaeEmbed from '../../../lib/structures/embeds/KaeEmbed';
-import { getLevelRoles } from '../../../lib/utils/levelRole';
-import { StatusCode } from '../../../lib/types/enum';
 
 export class ListRoleLevelCommand extends KaeCommand {
 	public constructor(context: KaeCommand.Context, options: KaeCommand.Options) {

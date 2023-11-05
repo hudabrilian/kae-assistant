@@ -1,7 +1,7 @@
+import { resolveMaybeKey } from '#lib/utils';
 import { Command, Subcommand } from '@kaname-png/plugin-subcommands-advanced';
 import { UserError } from '@sapphire/framework';
 import { TOptions, Target } from '@sapphire/plugin-i18next';
-import { resolveMaybeKey } from '../../utils';
 
 export abstract class KaeCommand extends Command {
 	public constructor(context: Command.Context, options: KaeCommand.Options) {

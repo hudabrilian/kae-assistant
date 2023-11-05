@@ -1,6 +1,6 @@
-import { KaeCommand } from '../../../lib/structures/commands/KaeCommand';
-import { StatusCode } from '../../../lib/types/enum';
-import { createField, getFieldByName } from '../../../lib/utils/field';
+import { KaeCommand } from '#lib/structures/commands/KaeCommand';
+import { StatusCode } from '#lib/types/enum';
+import { getFieldByName, createField } from '#lib/utils/field';
 
 export class CreateCommand extends KaeCommand {
 	public constructor(context: KaeCommand.Context, options: KaeCommand.Options) {

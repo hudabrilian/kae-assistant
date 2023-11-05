@@ -1,9 +1,8 @@
 import { Guild, LanguageTag } from '@prisma/client';
 import { container } from '@sapphire/framework';
 import { getEnumValueFromStringValue } from '../utils';
-import { Language } from '../types/enum';
-import { StatusCode } from '../types/enum';
-import { Status } from '../types/types';
+import { Status } from '#lib/types/types';
+import { StatusCode, Language } from '#lib/types/enum';
 
 export async function getGuild(guildId: string): Promise<Status<Guild | null>> {
 	try {

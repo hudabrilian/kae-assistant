@@ -1,5 +1,5 @@
+import { KaeCommand } from '#lib/structures/commands/KaeCommand';
 import { GuildMember } from 'discord.js';
-import { KaeCommand } from '../structures/commands/KaeCommand';
 
 export function formatText(
 	text: string,

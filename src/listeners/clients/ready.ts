@@ -1,8 +1,8 @@
+import { DEV } from '#config';
+import { initializeGuild } from '#lib/utils/functions/initialize';
 import { ApplyOptions } from '@sapphire/decorators';
 import { Listener, Store } from '@sapphire/framework';
-import { DEV } from '../../config';
 import { blue, gray, green, magenta, magentaBright, white, yellow } from 'colorette';
-import { initializeGuild } from '../../lib/utils/functions/initialize';
 
 @ApplyOptions<Listener.Options>({ once: true })
 export class UserEvent extends Listener {

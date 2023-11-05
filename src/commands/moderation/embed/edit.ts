@@ -1,7 +1,7 @@
+import { KaeCommand } from '#lib/structures/commands/KaeCommand';
+import { StatusCode } from '#lib/types/enum';
+import { getEmbedByName, updateEmbed } from '#lib/utils/embed';
 import { ColorResolvable } from 'discord.js';
-import { KaeCommand } from '../../../lib/structures/commands/KaeCommand';
-import { getEmbedByName, updateEmbed } from '../../../lib/utils/embed';
-import { StatusCode } from '../../../lib/types/enum';
 
 export class EditCommand extends KaeCommand {
 	public constructor(context: KaeCommand.Context, options: KaeCommand.Options) {

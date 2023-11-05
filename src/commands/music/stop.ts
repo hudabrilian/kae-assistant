@@ -1,6 +1,6 @@
+import { KaeCommand } from '#structures/commands/KaeCommand';
 import { ApplyOptions } from '@sapphire/decorators';
 import { useQueue } from 'discord-player';
-import { KaeCommand } from '../../lib/structures/commands/KaeCommand';
 
 @ApplyOptions<KaeCommand.Options>({
 	description: 'stop queue',

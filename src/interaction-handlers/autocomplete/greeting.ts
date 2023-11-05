@@ -1,7 +1,7 @@
+import { getEmbedsByGuildId } from '#lib/utils/embed';
 import { ApplyOptions } from '@sapphire/decorators';
 import { InteractionHandler, InteractionHandlerTypes } from '@sapphire/framework';
 import { AutocompleteInteraction, type ApplicationCommandOptionChoiceData } from 'discord.js';
-import { getEmbedsByGuildId } from '../../lib/utils/embed';
 
 @ApplyOptions<InteractionHandler.Options>({
 	interactionHandlerType: InteractionHandlerTypes.Autocomplete

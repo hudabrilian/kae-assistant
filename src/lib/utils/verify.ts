@@ -1,7 +1,7 @@
+import { StatusCode } from '#lib/types/enum';
+import { Status } from '#lib/types/types';
 import { GuildVerify } from '@prisma/client';
 import { container } from '@sapphire/framework';
-import { StatusCode } from '../types/enum';
-import { Status } from '../types/types';
 
 export async function getVerifyByGuildId(guildId: string): Promise<Status<GuildVerify | null>> {
 	try {

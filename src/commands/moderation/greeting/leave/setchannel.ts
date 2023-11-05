@@ -1,7 +1,7 @@
+import { KaeCommand } from '#lib/structures/commands/KaeCommand';
+import { StatusCode } from '#lib/types/enum';
+import { generateEmbed, setLeaveChannel } from '#lib/utils/greeting';
 import { ChannelType } from 'discord.js';
-import { KaeCommand } from '../../../../lib/structures/commands/KaeCommand';
-import { generateEmbed, setLeaveChannel } from '../../../../lib/utils/greeting';
-import { StatusCode } from '../../../../lib/types/enum';
 
 export class SetChannelCommand extends KaeCommand {
 	public constructor(context: KaeCommand.Context, options: KaeCommand.Options) {

@@ -1,6 +1,7 @@
-import { KaeCommand } from '../../../lib/structures/commands/KaeCommand';
-import { StatusCode } from '../../../lib/types/enum';
-import { getFieldByName, removeField } from '../../../lib/utils/field';
+import { KaeCommand } from '#lib/structures/commands/KaeCommand';
+import { StatusCode } from '#lib/types/enum';
+import { removeField } from '#lib/utils/field';
+import { getFieldByName } from '#lib/utils/field';
 
 export class RemoveCommand extends KaeCommand {
 	public constructor(context: KaeCommand.Context, options: KaeCommand.Options) {

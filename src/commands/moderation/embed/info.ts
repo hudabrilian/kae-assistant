@@ -1,6 +1,6 @@
-import { KaeCommand } from '../../../lib/structures/commands/KaeCommand';
-import { StatusCode } from '../../../lib/types/enum';
-import { generateEmbed, getEmbedByName } from '../../../lib/utils/embed';
+import { KaeCommand } from '#lib/structures/commands/KaeCommand';
+import { StatusCode } from '#lib/types/enum';
+import { getEmbedByName, generateEmbed } from '#lib/utils/embed';
 
 export class InfoCommand extends KaeCommand {
 	public constructor(context: KaeCommand.Context, options: KaeCommand.Options) {

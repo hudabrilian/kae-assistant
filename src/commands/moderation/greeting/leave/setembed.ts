@@ -1,6 +1,6 @@
-import { KaeCommand } from '../../../../lib/structures/commands/KaeCommand';
-import { StatusCode } from '../../../../lib/types/enum';
-import { generateEmbed, setLeaveEmbed } from '../../../../lib/utils/greeting';
+import { KaeCommand } from '#lib/structures/commands/KaeCommand';
+import { StatusCode } from '#lib/types/enum';
+import { generateEmbed, setLeaveEmbed } from '#lib/utils/greeting';
 
 export class SetChannelCommand extends KaeCommand {
 	public constructor(context: KaeCommand.Context, options: KaeCommand.Options) {

@@ -1,9 +1,9 @@
+import { CLIENT_OPTIONS } from '#config';
 import { Enumerable } from '@sapphire/decorators';
 import { SapphireClient, container } from '@sapphire/framework';
-import { CLIENT_OPTIONS } from '../config';
-import prismaClient from './database';
-import { KaeLevel } from './structures/KaeLevel';
 import { Player } from 'discord-player';
+import { KaeLevel } from './structures/KaeLevel';
+import prismaClient from '#database';
 
 export default class KaeClient extends SapphireClient {
 	@Enumerable(false)

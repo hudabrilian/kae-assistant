@@ -1,7 +1,7 @@
+import { StatusCode } from '#lib/types/enum';
+import { Status } from '#lib/types/types';
 import { GuildLevelRole, Prisma } from '@prisma/client';
 import { container } from '@sapphire/framework';
-import { StatusCode } from '../types/enum';
-import { Status } from '../types/types';
 
 export async function addLevelRole(roleId: string, level: number, guildId: string): Promise<Status<GuildLevelRole>> {
 	try {

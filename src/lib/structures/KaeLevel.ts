@@ -1,8 +1,8 @@
+import { LevelEvents, StatusCode } from '#lib/types/enum';
+import { Status } from '#lib/types/types';
 import { GuildLevel, Prisma, UserLevel } from '@prisma/client';
 import { container as c } from '@sapphire/framework';
 import { type Container } from '@sapphire/pieces';
-import { LevelEvents, StatusCode } from '../types/enum';
-import { Status } from '../types/types';
 
 export class KaeLevel {
 	private baseXp: number = 100;

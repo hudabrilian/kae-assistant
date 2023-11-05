@@ -1,4 +1,4 @@
-import { KaeCommand } from '../../lib/structures/commands/KaeCommand';
+import { KaeCommand } from '#structures/commands/KaeCommand';
 
 export class SetCommand extends KaeCommand {
 	public constructor(context: KaeCommand.Context, options: KaeCommand.Options) {

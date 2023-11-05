@@ -1,6 +1,6 @@
-import { KaeCommand } from '../../../lib/structures/commands/KaeCommand';
-import { StatusCode } from '../../../lib/types/enum';
-import { changeStatus, generateEmbed, getGreetingsByGuildId } from '../../../lib/utils/greeting';
+import { KaeCommand } from '#lib/structures/commands/KaeCommand';
+import { StatusCode } from '#lib/types/enum';
+import { getGreetingsByGuildId, changeStatus, generateEmbed } from '#lib/utils/greeting';
 
 export class SetStatusCommand extends KaeCommand {
 	public constructor(context: KaeCommand.Context, options: KaeCommand.Options) {

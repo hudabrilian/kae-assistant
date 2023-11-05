@@ -1,6 +1,6 @@
+import { OWNERS } from '#config';
 import { Precondition } from '@sapphire/framework';
 import { CommandInteraction, ContextMenuCommandInteraction, Message } from 'discord.js';
-import { OWNERS } from '../config';
 
 export class UserPrecondition extends Precondition {
 	public override async messageRun(message: Message) {

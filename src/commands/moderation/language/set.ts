@@ -1,8 +1,8 @@
-import { KaeCommand } from '../../../lib/structures/commands/KaeCommand';
-import KaeEmbed from '../../../lib/structures/embeds/KaeEmbed';
-import { Language, StatusCode } from '../../../lib/types/enum';
-import { mapEnumToChoices } from '../../../lib/utils';
-import { editGuildLanguage, getGuild } from '../../../lib/utils/guild';
+import KaeEmbed from '#lib/structures/embeds/KaeEmbed';
+import { Language, StatusCode } from '#lib/types/enum';
+import { mapEnumToChoices } from '#lib/utils';
+import { getGuild, editGuildLanguage } from '#lib/utils/guild';
+import { KaeCommand } from '#structures/commands/KaeCommand';
 
 export class SetCommand extends KaeCommand {
 	public constructor(context: KaeCommand.Context, options: KaeCommand.Options) {

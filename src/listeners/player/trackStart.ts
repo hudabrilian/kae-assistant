@@ -1,8 +1,8 @@
+import KaeEmbed from '#lib/structures/embeds/KaeEmbed';
 import { ApplyOptions } from '@sapphire/decorators';
 import { Listener, container } from '@sapphire/framework';
 import { GuildQueue, Track } from 'discord-player';
 import { CommandInteraction } from 'discord.js';
-import KaeEmbed from '../../lib/structures/embeds/KaeEmbed';
 
 @ApplyOptions<Listener.Options>({
 	emitter: container.player.events,
