@@ -52,6 +52,8 @@ model Guild {
   guildLevel GuildLevel?
   usersLevel UserLevel[]
 
+  reactionRoles ReactionRole[]
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
@@ -158,6 +160,21 @@ model GuildVerify {
   guildId String @db.ObjectId @unique
 
   role String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model ReactionRole {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+
+  guild Guild @relation(fields: [guildId], references: [id])
+  guildId String @db.ObjectId
+
+  role String
+  emoji String
+
+  message String
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
