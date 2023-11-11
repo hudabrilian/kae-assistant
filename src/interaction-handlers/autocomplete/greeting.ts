@@ -1,6 +1,6 @@
 import { getEmbedsByGuildId } from '#lib/utils/embed';
 import { ApplyOptions } from '@sapphire/decorators';
-import { InteractionHandler, InteractionHandlerTypes, container } from '@sapphire/framework';
+import { InteractionHandler, InteractionHandlerTypes } from '@sapphire/framework';
 import { AutocompleteInteraction, type ApplicationCommandOptionChoiceData } from 'discord.js';
 
 @ApplyOptions<InteractionHandler.Options>({
@@ -12,8 +12,7 @@ export class AutocompleteHandler extends InteractionHandler {
 	}
 
 	public override async parse(interaction: AutocompleteInteraction) {
-		const appCommandRegistry = container.applicationCommandRegistries.acquire(interaction.commandName);
-		if (interaction.commandId !== appCommandRegistry.globalCommandId) return this.none();
+		if (interaction.commandId !== '1170660652147294288') return this.none();
 		const focusedOption = interaction.options.getFocused(true);
 		switch (focusedOption.name) {
 			case 'embed': {
